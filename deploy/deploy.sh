@@ -10,9 +10,10 @@ FRONTEND_PORT=3025
 
 echo "==> Deploy GasKode Aja"
 
-if [ ! -d "$APP_DIR/.git" ]; then
+if [ ! -f "$APP_DIR/GasKodeWeb/artisan" ]; then
+  rm -rf "$APP_DIR"
   git clone --branch "$BRANCH" "$REPO_URL" "$APP_DIR"
-else
+elif [ -d "$APP_DIR/.git" ]; then
   cd "$APP_DIR"
   git fetch origin
   git reset --hard "origin/$BRANCH"
@@ -20,7 +21,6 @@ fi
 
 cd "$APP_DIR"
 
-# Database setup (first run only)
 if ! mysql -e "USE $DB_NAME" 2>/dev/null; then
   DB_PASS=$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | head -c 24)
   mysql -e "CREATE DATABASE IF NOT EXISTS $DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
@@ -31,9 +31,13 @@ if ! mysql -e "USE $DB_NAME" 2>/dev/null; then
   echo "Database credentials saved to $APP_DIR/.db-credentials"
 fi
 
+if [ ! -f "$APP_DIR/.db-credentials" ]; then
+  echo "ERROR: .db-credentials missing. Create database manually." >&2
+  exit 1
+fi
+
 DB_PASS=$(grep DB_PASSWORD "$APP_DIR/.db-credentials" | cut -d= -f2)
 
-# Backend .env
 cd "$APP_DIR/GasKodeWeb"
 if [ ! -f .env ]; then
   cp .env.example .env
@@ -80,7 +84,6 @@ php artisan view:cache
 chown -R www-data:www-data storage bootstrap/cache public/uploads
 chmod -R 775 storage bootstrap/cache public/uploads
 
-# Frontend .env
 cd "$APP_DIR/gaskode-frontend"
 cat > .env.local <<EOF
 NEXT_PUBLIC_API_URL=https://gaskodeaja.com/api
@@ -91,12 +94,10 @@ EOF
 npm ci
 npm run build
 
-# PM2
 pm2 delete gaskodeaja-frontend 2>/dev/null || true
 pm2 start node_modules/next/dist/bin/next --name gaskodeaja-frontend -- start -p $FRONTEND_PORT
 pm2 save
 
-# Nginx
 cp "$APP_DIR/deploy/nginx-gaskodeaja.conf" /etc/nginx/sites-available/gaskodeaja.com
 ln -sf /etc/nginx/sites-available/gaskodeaja.com /etc/nginx/sites-enabled/gaskodeaja.com
 nginx -t && systemctl reload nginx

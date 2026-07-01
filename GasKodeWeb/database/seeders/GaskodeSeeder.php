@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Branding;
 use App\Models\Hero;
-use App\Models\Service;
+use App\Models\Services;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -62,7 +62,7 @@ class GaskodeSeeder extends Seeder
         ];
 
         foreach ($services as $service) {
-            Service::query()->updateOrCreate(['title' => $service['title']], $service);
+            Services::query()->updateOrCreate(['title' => $service['title']], $service);
         }
     }
 }
