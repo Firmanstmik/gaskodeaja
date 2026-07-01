@@ -1,0 +1,27 @@
+<IfModule mod_headers.c>
+    # 1. Tentukan origin yang diizinkan (tambah baris baru jika ada domain lain)
+    SetEnvIf Origin "^http://localhost:3000$" ALLOWED_ORIGIN=$0
+    SetEnvIf Origin "^https://lab\.bahri48\.com$" ALLOWED_ORIGIN=$0
+
+    # 2. Hanya set header jika origin cocok (variabel ALLOWED_ORIGIN ada isinya)
+    Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
+    
+    # 3. Header tambahan yang diperlukan
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Authorization, Content-Type, Accept, X-Requested-With"
+    Header always set Access-Control-Allow-Credentials "true"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # 🔥 Tangani Preflight OPTIONS di level server agar tidak membebani Laravel
+    # Jika method OPTIONS, langsung beri response 204 No Content
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=204,L]
+
+    # Jalankan routing Laravel seperti biasa
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
