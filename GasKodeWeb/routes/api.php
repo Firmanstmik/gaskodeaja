@@ -35,6 +35,9 @@ Route::prefix('public')->group(function () {
     Route::get('/portfolios', PublicPortfolioController::class);
     Route::get('/blogs', BlogController::class);
     Route::get('/contacts', ContactController::class);
+
+    // Public lead capture dari form kontak website (tanpa auth)
+    Route::post('/contacts', [ContactSubmissionController::class, 'store']);
 });
 
 Route::prefix('auth')->group(function () {

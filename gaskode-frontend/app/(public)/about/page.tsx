@@ -1,127 +1,87 @@
-import {
-  CheckCircle2,
-  ShieldCheck,
-  Target,
-  Users,
-  MessageSquare,
-  TrendingUp,
-  Search,
-  Star,
-} from "lucide-react";
-
-// Layer Domain & Infrastructure
 import { ApiAboutRepository } from "@/core/infrastructure/repositories/ApiAboutRepository";
 import { GetAboutPageData } from "@/core/application/use-cases/GetAboutPageData";
+import {
+  Crown1,
+  Flash,
+  People,
+  QuoteDown,
+  ShieldTick,
+  Star1,
+  TickCircle,
+} from "iconsax-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function AboutPage() {
-  // 1. Inisialisasi Clean Architecture di Server Side
   const repository = new ApiAboutRepository();
   const useCase = new GetAboutPageData(repository);
   const data = await useCase.execute();
-
   const uri = process.env.NEXT_PUBLIC_IMG_URL || "http://127.0.0.1:8006";
 
-  // 2. Helper untuk memisahkan Visi dan Misi dari Entity visiMisi[]
   const visi = data.visiMisi?.find((i) => i.tipe === "visi");
   const misi = data.visiMisi?.find((i) => i.tipe === "misi");
 
-  // Mapping Icon untuk Misi
-  const missionIcons = [
-    <Target />,
-    <ShieldCheck />,
-    <Search />,
-    <TrendingUp />,
-  ];
-
   return (
-    <main className="text-slate-900 font-sans">
-
-      {/* --- 🧭 HEADER SECTION (Hero) --- */}
-      <section className="relative min-h-[60vh] flex items-center overflow-hidden bg-slate-800">
-        {/* Gambar Banner dari API */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src={`${uri}/${data.hero.imagePath}`}
-            alt="Hero Banner GaskodeAja"
-            className="w-full h-full object-cover opacity-40" // Opacity dikurangi agar teks terbaca
-          />
-          {/* Overlay Gradien agar lebih elegan */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
-        </div>
-
-        <div className="container mx-auto px-6 relative z-10 text-center">
-          <h1 className="text-4xl lg:text-7xl font-extrabold mb-6 text-white leading-tight">
+    <main className="bg-[#fbf7f1] text-slate-900">
+      <section className="relative isolate overflow-hidden">
+        <div className="absolute inset-0 -z-20 bg-[#161310]" />
+        <div
+          className="absolute inset-0 -z-10 bg-cover bg-center opacity-55"
+          style={{ backgroundImage: `url('${uri}/${data.hero.imagePath}')` }}
+        />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(120deg,rgba(12,10,8,0.92)_0%,rgba(12,10,8,0.74)_50%,rgba(12,10,8,0.38)_100%)]" />
+        <div className="mx-auto max-w-7xl px-6 py-28">
+          <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-[#f3c9a4] backdrop-blur">
+            <Crown1 size={16} />
+            About GasKodeAja
+          </p>
+          <h1 className="max-w-4xl text-5xl font-black leading-[0.95] tracking-[-0.04em] text-white md:text-7xl">
             {data.hero.title}
           </h1>
-          <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-10 leading-relaxed">
-            {data.hero.subtitle}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href={data.hero.ctaLink}
-              className="bg-[#A47148] text-white px-10 py-4 rounded-full font-bold hover:bg-[#8a5a3c] transition-all shadow-xl hover:shadow-[#A47148]/50 text-lg"
-            >
-              {data.hero.ctaText}
-            </a>
-            <button className="border border-white/30 text-white backdrop-blur-md px-10 py-4 rounded-full font-bold hover:bg-white/10 transition-all">
-              Lihat Portfolio
-            </button>
-          </div>
+          <p className="mt-8 max-w-3xl text-xl leading-9 text-white/75">{data.hero.subtitle}</p>
+          <a
+            href={data.hero.ctaLink}
+            className="mt-10 inline-flex items-center gap-3 rounded-full bg-[#A47148] px-7 py-4 text-sm font-black uppercase tracking-wide text-white shadow-[0_18px_45px_rgba(164,113,72,0.35)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#8B5E3C]"
+          >
+            {data.hero.ctaText}
+          </a>
         </div>
       </section>
 
-      {/* --- 💡 STORY / LATAR BELAKANG (Opening) --- */}
-      <section className="py-10 container mx-auto px-6">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
-          <div className="lg:w-1/2">
-            <h2 className="text-3xl font-bold mb-6">
+      <section className="px-6 py-24">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-[#A47148]">Our Story</p>
+            <h2 className="mt-3 text-4xl font-black tracking-[-0.03em] md:text-5xl">
               {data.opening.pernyataan}
             </h2>
-            <div className="space-y-4 text-slate-600 leading-relaxed text-lg">
-              <p>{data.opening.jawaban[0]}</p>
-              <p className="font-boold text-slate-600">
-                {data.opening.jawaban[1]}
-              </p>
-              <p className="pt-4 border-t border-slate-100 italic">
-                {data.opening.jawaban[2]}
-              </p>
+            <div className="mt-8 space-y-5 text-lg leading-8 text-slate-600">
+              {data.opening.jawaban.map((item) => (
+                <p key={item}>{item}</p>
+              ))}
             </div>
           </div>
-          <div className="lg:w-1/2 rounded-3xl h-96 overflow-hidden shadow-2xl relative">
-            <img
-              src={`${uri}/${data.hero.imagePath}`}
-              alt="About GaskodeAja"
-              className="w-full h-full object-cover"
-            />
+          <div className="overflow-hidden rounded-[2rem] border border-[#e8d9c7] bg-white p-3 shadow-[0_20px_50px_rgba(32,21,14,0.12)]">
+            <img src={`${uri}/${data.hero.imagePath}`} alt={data.hero.title} className="h-full w-full rounded-[1.6rem] object-cover" />
           </div>
         </div>
       </section>
 
-      {/* --- 🎯 VISI & MISI --- */}
-      <section className="py-10 text-slate-900">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Visi Kami</h2>
-            <p className="text-slate-700 max-w-2xl mx-auto text-lg italic">
-              "{visi?.konten[0]}"
-            </p>
+      <section className="bg-[#161310] px-6 py-24 text-white">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10 text-center">
+            <h2 className="text-4xl font-black tracking-[-0.03em] md:text-5xl">Visi & Misi Kami</h2>
+            <p className="mx-auto mt-4 max-w-3xl text-lg text-white/70">"{visi?.konten?.[0] || "Membangun solusi digital yang berdampak nyata untuk bisnis."}"</p>
           </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {misi?.konten.map((item, index) => (
-              <div
-                key={index}
-                className="p-6 bg-white shadow-sm rounded-xl hover:bg-orange-200 transition-colors"
-              >
-                <div className="text-slate-900 mb-4">
-                  {missionIcons[index] || <CheckCircle2 />}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {(misi?.konten || []).map((item) => (
+              <div key={item} className="rounded-[1.6rem] border border-white/15 bg-white/[0.04] p-6">
+                <div className="mb-4 inline-flex rounded-xl bg-[#A47148]/20 p-2.5 text-[#f3c9a4]">
+                  <ShieldTick size={20} variant="Bulk" />
                 </div>
-                <h3 className="font-bold mb-2">{item}</h3>
-                <p className="text-slate-700 text-sm">
-                  Memberikan standar {item.toLowerCase()} terbaik untuk setiap
-                  proyek.
+                <h3 className="text-xl font-bold">{item}</h3>
+                <p className="mt-3 text-sm leading-7 text-white/65">
+                  Standar kerja kami untuk menjaga kualitas pada setiap tahap project.
                 </p>
               </div>
             ))}
@@ -129,16 +89,12 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* --- 🚀 VALUE PROPOSITION --- */}
-      <section className="py-10">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-12 text-slate-900">{data.value.pernyataan}</h2>
-          <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {data.value.jawaban.map((val, i) => (
-              <div
-                key={i}
-                className="p-4 bg-orange-50 rounded-lg font-semibold text-slate-700 border border-orange-100 shadow-sm"
-              >
+      <section className="px-6 py-24">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="text-center text-4xl font-black tracking-[-0.03em] md:text-5xl">{data.value.pernyataan}</h2>
+          <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-5">
+            {data.value.jawaban.map((val) => (
+              <div key={val} className="rounded-2xl border border-[#eadbc8] bg-white px-5 py-4 text-sm font-bold text-slate-700 shadow-sm">
                 {val}
               </div>
             ))}
@@ -146,43 +102,38 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* --- 📊 STATISTIK --- */}
-      <section className="py-16 bg-[#A47148] text-white">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="text-4xl lg:text-5xl font-black mb-2">
-                {data.portfolio.total}+
-              </div>
-              <p className="text-slate-100">Project Selesai</p>
+      <section className="bg-[#f4ece2] px-6 py-24">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="rounded-3xl bg-white p-8 text-center">
+              <p className="text-5xl font-black text-slate-900">{data.portfolio.total}+</p>
+              <p className="mt-2 text-sm font-bold uppercase tracking-[0.16em] text-slate-500">Project Selesai</p>
             </div>
-            <div>
-              <div className="text-4xl lg:text-5xl font-black mb-2 flex items-center justify-center gap-2">
-                {data.portfolio.rating} <Star fill="white" size={32} />
-              </div>
-              <p className="text-slate-100">Rating Kepuasan</p>
+            <div className="rounded-3xl bg-white p-8 text-center">
+              <p className="flex items-center justify-center gap-1 text-5xl font-black text-slate-900">
+                {data.portfolio.rating}
+                <Star1 size={22} variant="Bold" className="text-[#A47148]" />
+              </p>
+              <p className="mt-2 text-sm font-bold uppercase tracking-[0.16em] text-slate-500">Rating Klien</p>
             </div>
-            <div className="col-span-2 lg:col-span-1 text-sm lg:text-base flex items-center justify-center italic opacity-80">
-              "Solusi digital terpercaya untuk UMKM hingga korporasi."
+            <div className="rounded-3xl bg-[#161310] p-8 text-white">
+              <p className="text-sm uppercase tracking-[0.18em] text-[#f3c9a4]">Signature</p>
+              <p className="mt-4 text-lg font-semibold leading-8 text-white/75">
+                Solusi digital premium untuk UMKM sampai perusahaan skala enterprise.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- 💼 CARA KERJA --- */}
-      <section className="py-10">
-        <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-16">
-            Bagaimana Kami Bekerja?
-          </h2>
-          <div className="max-w-4xl mx-auto space-y-4">
-            {data.caraKerja.map((step, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-6 bg-white p-6 rounded-2xl shadow-sm border border-slate-100"
-              >
-                <div className="w-12 h-12 bg-[#A47148] text-white rounded-xl flex-shrink-0 flex items-center justify-center font-black text-xl shadow-md">
-                  {i + 1}
+      <section className="px-6 py-24">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-center text-4xl font-black tracking-[-0.03em] md:text-5xl">Cara Kerja Kami</h2>
+          <div className="mt-14 space-y-4">
+            {data.caraKerja.map((step, idx) => (
+              <div key={step} className="flex items-center gap-5 rounded-2xl border border-[#eadbc8] bg-white p-6">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#A47148] text-lg font-black text-white">
+                  {idx + 1}
                 </div>
                 <p className="text-lg font-semibold text-slate-700">{step}</p>
               </div>
@@ -191,73 +142,58 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* --- 👨‍💻 TIM / LAYANAN --- */}
-      <section className="py-10 container mx-auto px-6 text-center">
-        <h2 className="text-3xl font-bold mb-4">Layanan Spesialis Kami</h2>
-        <p className="mb-12 text-slate-600">
-          Tim ahli yang siap mengeksekusi ide digital Anda
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-          {data.team.map((member, i) => (
-            <div key={i} className="group">
-              <div className="w-24 h-24 bg-orange-200 rounded-full mx-auto mb-4 flex items-center justify-center group-hover:bg-[#A47148] transition-all duration-300">
-                <Users
-                  className="text-[#A47148] group-hover:text-white"
-                  size={32}
-                />
-              </div>
-              <h4 className="font-bold text-slate-800">{member.name}</h4>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* --- ⭐ TESTIMONI --- */}
-      <section className="py-10">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-12">Apa Kata Klien Kami?</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {data.testimonials.map((testi, i) => (
-              <div
-                key={i}
-                className="bg-white p-8 rounded-3xl shadow-sm text-left relative group"
-              >
-                <MessageSquare className="absolute -top-3 -right-3 text-[#A47148] w-12 h-12" />
-                <div className="flex gap-1 mb-4 text-orange-400">
-                  {[...Array(testi.rating)].map((_, s) => (
-                    <Star key={s} size={16} fill="currentColor" />
-                  ))}
+      <section className="bg-[#161310] px-6 py-24 text-white">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="text-center text-4xl font-black tracking-[-0.03em] md:text-5xl">Tim Spesialis Kami</h2>
+          <div className="mt-12 grid gap-5 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+            {data.team.map((member) => (
+              <div key={member.slug} className="rounded-2xl border border-white/15 bg-white/[0.04] p-6 text-center">
+                <div className="mx-auto mb-4 inline-flex rounded-2xl bg-[#A47148]/20 p-3 text-[#f3c9a4]">
+                  <People size={22} variant="Bulk" />
                 </div>
-                <p className="italic text-slate-600 mb-6 leading-relaxed">
-                  "{testi.content}"
-                </p>
-                <div className="border-t pt-4">
-                  <h4 className="font-bold text-slate-800">{testi.name}</h4>
-                  <p className="text-sm text-[#A47148] font-medium">
-                    {testi.position}
-                  </p>
-                </div>
+                <p className="text-sm font-bold uppercase tracking-[0.1em] text-white/80">{member.name}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* --- 📞 CLOSING SECTION --- */}
-      <section className="py-10 container mx-auto px-6 text-center">
-        <div className="bg-orange-300/50 rounded-[2rem] p-12 text-white shadow-2xl relative overflow-hidden">
-          <h2 className="text-4xl font-bold mb-6 text-slate-900">{data.closing.pernyataan}</h2>
-          <p className="text-xl text-slate-900 mb-10 max-w-2xl mx-auto">
-            {data.closing.jawaban[0]}
-          </p>
+      <section className="px-6 py-24">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="mb-12 text-center text-4xl font-black tracking-[-0.03em] md:text-5xl">Apa Kata Klien Kami</h2>
+          <div className="grid gap-6 md:grid-cols-3">
+            {data.testimonials.map((testi) => (
+              <div key={testi.name} className="rounded-[1.8rem] border border-[#eadbc8] bg-white p-7 shadow-[0_10px_30px_rgba(42,28,18,0.08)]">
+                <QuoteDown size={22} variant="Bulk" className="mb-4 text-[#A47148]" />
+                <div className="mb-4 flex gap-1 text-[#A47148]">
+                  {[...Array(testi.rating)].map((_, i) => (
+                    <Star1 key={`${testi.name}-${i}`} size={16} variant="Bold" />
+                  ))}
+                </div>
+                <p className="text-sm leading-7 text-slate-600">{testi.content}</p>
+                <p className="mt-5 text-base font-black text-slate-900">{testi.name}</p>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#A47148]">{testi.position}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-6 pb-24">
+        <div className="mx-auto max-w-6xl rounded-[2.2rem] bg-[#161310] p-12 text-center text-white shadow-[0_28px_70px_rgba(18,13,9,0.28)]">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-[#f3c9a4]">Ready To Start</p>
+          <h2 className="mt-4 text-4xl font-black tracking-[-0.03em] md:text-6xl">{data.closing.pernyataan}</h2>
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/70">{data.closing.jawaban[0]}</p>
           <a
             href={data.hero.ctaLink}
-            className="inline-flex items-center gap-3 bg-white text-slate-700 px-6 py-3 rounded-full font-black text-xl hover:scale-105 transition-transform shadow-xl"
+            className="mt-9 inline-flex items-center gap-2 rounded-full bg-[#A47148] px-8 py-4 text-sm font-black uppercase tracking-wide text-white transition-all hover:-translate-y-1 hover:bg-[#8B5E3C]"
           >
             Konsultasi Sekarang
+            <Flash size={16} />
           </a>
         </div>
       </section>
     </main>
   );
 }
+

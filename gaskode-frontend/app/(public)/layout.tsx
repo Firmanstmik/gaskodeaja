@@ -19,9 +19,10 @@ export default async function PublicLayout({
 
   return (
     <>
-    <Navbar/>
-      <main>{children}</main>
-      
+      <Navbar />
+      {/* Setiap halaman menyediakan elemen <main> nya sendiri */}
+      {children}
+
       {/* Kirim hasil data UseCase ke komponen Footer */}
       {footerData && <Footer data={footerData} />}
     </>

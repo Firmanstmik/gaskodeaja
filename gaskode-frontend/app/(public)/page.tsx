@@ -1,6 +1,5 @@
 import { ApiHomeRepository } from "@/core/infrastructure/repositories/ApiHomePageRepository";
 import { HomeData } from "@/core/domain/entities/HomePage";
-import { Navbar } from "@/components/Navbar";
 import { HomePremiumContent } from "@/components/home/HomePremiumContent";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +11,6 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-[#fbf7f1] text-slate-900">
-      <Navbar />
       <HomePremiumContent
         hero={data.hero}
         opening={data.opening}
@@ -25,4 +23,3 @@ export default async function HomePage() {
     </main>
   );
 }
-

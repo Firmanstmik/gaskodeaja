@@ -3,24 +3,82 @@
 :root {
   --background: #fbf7f1;
   --foreground: #171717;
+
+  /* Brand design tokens (single source of truth) */
+  --brand: #a47148;
+  --brand-dark: #8b5e3c;
+  --brand-tint: #f3c9a4;
+  --ink: #161310;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-tint: var(--brand-tint);
+  --color-ink: var(--ink);
   --font-sans: var(--font-sora);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #fff3e0;
-    --foreground: #111827;
-  }
+html {
+  scroll-behavior: smooth;
+  /* Offset for the sticky navbar when jumping to #anchors */
+  scroll-padding-top: 6rem;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sora), Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Consistent, accessible keyboard focus across the whole site */
+:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--background),
+    0 0 0 4px var(--brand);
+  border-radius: 0.5rem;
+}
+
+/* Selection styled to match the brand */
+::selection {
+  background: var(--brand);
+  color: #fff;
+}
+
+/* Subtle brand-aware scrollbar (WebKit) */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(164, 113, 72, 0.35);
+  border: 3px solid var(--background);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(164, 113, 72, 0.6);
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
