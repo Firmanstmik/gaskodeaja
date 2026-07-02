@@ -6,10 +6,12 @@ import { apiClient } from "../services/ApiClient";
 
 export class ApiFooterRepository implements IFooterRepository {
   private readonly path = '/footer';
+  // Endpoint publik (tanpa auth) untuk render footer di layout situs
+  private readonly publicPath = '/public/footer';
 
   async get(): Promise<Footer | null> {
     try {
-      const res = await apiClient(this.path, { cache: 'no-store' });
+      const res = await apiClient(this.publicPath, { cache: 'no-store' });
       if (!res.ok) return null;
       
       const response = await res.json();

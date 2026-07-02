@@ -38,6 +38,9 @@ Route::prefix('public')->group(function () {
 
     // Public lead capture dari form kontak website (tanpa auth)
     Route::post('/contacts', [ContactSubmissionController::class, 'store']);
+
+    // Footer bersifat konten publik (brand, alamat, sosial media)
+    Route::get('/footer', [FooterController::class, 'index']);
 });
 
 Route::prefix('auth')->group(function () {
