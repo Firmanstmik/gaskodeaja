@@ -60,7 +60,8 @@ class EloquentHeroRepository implements HeroRepositoryInterface
     }
     public function getBySpecificIndex(int $index): ?HeroEntity
     {
-        $m = HeroModel::where('is_active', true)->get()[$index] ?? null;
+        // Setiap halaman punya hero sendiri (urut by id), jangan filter is_active
+        $m = HeroModel::orderBy('id')->skip($index)->first();
 
         if (!$m) return null;
 
