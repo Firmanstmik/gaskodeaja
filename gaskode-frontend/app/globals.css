@@ -19,7 +19,84 @@
   --color-brand-tint: var(--brand-tint);
   --color-ink: var(--ink);
   --font-sans: var(--font-sora);
+  --font-serif: var(--font-fraunces);
   --font-mono: var(--font-geist-mono);
+}
+
+/* ── Luxury editorial helpers ─────────────────────────────── */
+
+/* Serif display type for headlines */
+.font-display {
+  font-family: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  font-optical-sizing: auto;
+}
+
+/* Champagne → bronze gradient text for accent words */
+.text-gold-gradient {
+  background: linear-gradient(96deg, #f3c9a4 0%, #d9a875 38%, #a47148 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Fine film-grain texture overlay for depth (used on dark panels) */
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Continuous marquee for the trust ribbon */
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee-x 38s linear infinite;
+}
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 12%,
+    #000 88%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 12%,
+    #000 88%,
+    transparent
+  );
+}
+
+/* Slow floating glow orbs in the hero */
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -28px, 0) scale(1.06);
+  }
+}
+.animate-float-slow {
+  animation: float-slow 11s ease-in-out infinite;
+}
+
+/* Hairline divider tuned to the warm palette */
+.hairline {
+  border-color: rgba(164, 113, 72, 0.22);
 }
 
 html {
