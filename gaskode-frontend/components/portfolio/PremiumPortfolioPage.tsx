@@ -22,6 +22,7 @@ import {
   Warning2,
 } from "iconsax-react";
 import { PortfolioPageData, PortfolioItem } from "@/core/domain/entities/PortfolioEntity";
+import { Button } from "@/components/ui/Button";
 
 type PremiumPortfolioPageProps = {
   data: PortfolioPageData;
@@ -99,20 +100,14 @@ export function PremiumPortfolioPage({ data, imageBaseUrl }: PremiumPortfolioPag
               {data.hero.subtitle}
             </motion.p>
             <motion.div variants={fadeUp} className="mt-10 flex flex-wrap gap-4">
-              <Link
-                href={data.hero.ctaLink}
-                className="group inline-flex items-center gap-3 rounded-full bg-[#c4834d] px-7 py-4 text-sm font-black text-white shadow-2xl shadow-[#c4834d]/30 transition hover:bg-[#a66a3f]"
-              >
+              <Button href={data.hero.ctaLink} full={false}>
                 {data.hero.ctaText}
-                <ArrowRight2 size={18} className="transition group-hover:translate-x-1" />
-              </Link>
-              <a
-                href="#projects"
-                className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-7 py-4 text-sm font-black text-white backdrop-blur transition hover:bg-white/15"
-              >
+                <ArrowRight2 size={18} />
+              </Button>
+              <Button href="#projects" variant="ghost" full={false}>
                 Lihat Project
                 <Eye size={18} />
-              </a>
+              </Button>
             </motion.div>
           </div>
 
@@ -224,13 +219,10 @@ export function PremiumPortfolioPage({ data, imageBaseUrl }: PremiumPortfolioPag
               </h2>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-white/65">{data.closing.jawaban[0]}</p>
             </div>
-            <Link
-              href={data.hero.ctaLink}
-              className="group inline-flex items-center justify-center gap-3 rounded-full bg-[#c4834d] px-8 py-5 text-base font-black text-white shadow-xl shadow-[#c4834d]/25 transition hover:bg-[#a66a3f]"
-            >
+            <Button href={data.hero.ctaLink} full={false}>
               Chat WhatsApp Sekarang
-              <MessageQuestion size={22} className="transition group-hover:rotate-12" />
-            </Link>
+              <MessageQuestion size={22} />
+            </Button>
           </div>
         </motion.div>
       </section>
@@ -271,17 +263,19 @@ function ProjectCard({
       transition={{ duration: 0.45, type: "spring", stiffness: 120 }}
       className="group overflow-hidden rounded-[2rem] border border-[#ead8c5] bg-white shadow-xl shadow-[#7a4c2c]/5"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
-        <img
-          src={imageUrl(imageBaseUrl, item.imageThumbnail)}
-          alt={item.title}
-          className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent opacity-90" />
+      <div className="relative">
+        <div className="aspect-[4/3] overflow-hidden bg-slate-100">
+          <img
+            src={imageUrl(imageBaseUrl, item.imageThumbnail)}
+            alt={item.title}
+            className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent opacity-90" />
+        </div>
         <div className="absolute left-5 top-5 rounded-full bg-white/90 px-4 py-2 text-xs font-black uppercase tracking-widest text-slate-950 backdrop-blur">
           Project {String(index + 1).padStart(2, "0")}
         </div>
-        <div className="absolute bottom-5 left-5 right-5">
+        <div className="absolute bottom-5 left-5 right-16">
           <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#c4834d] px-3 py-1.5 text-xs font-black text-white">
             {categoryIcons[category] ?? <Briefcase size={16} />}
             {category}
@@ -289,6 +283,10 @@ function ProjectCard({
           <h3 className="text-3xl font-black tracking-[-0.04em] text-white">{item.title}</h3>
           <p className="mt-1 text-sm font-bold uppercase tracking-[0.2em] text-white/60">{item.clientName}</p>
         </div>
+        {/* Overlap CTA — straddles the image/content seam, consistent with Home's Selected Works */}
+        <span className="tap absolute bottom-0 right-6 z-10 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full border-[3px] border-white bg-[#c4834d] text-white shadow-[0_12px_30px_-8px_rgba(196,131,77,0.65)] transition-all duration-500 group-hover:-translate-y-[65%] group-hover:rotate-45">
+          <ArrowRight2 size={20} />
+        </span>
       </div>
 
       <div className="space-y-6 p-6">

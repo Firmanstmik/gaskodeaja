@@ -1,12 +1,23 @@
 'use client';
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight2, Category2, Code, Mobile, MonitorMobbile, Profile2User, Ranking, ShieldTick } from 'iconsax-react';
+import { ease } from '@/lib/design-tokens';
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showMega, setShowMega] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const menuItems = [
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/about' },
@@ -35,8 +46,18 @@ export const Navbar = () => {
   ];
 
   return (
-    <nav className="sticky top-0 left-0 z-50 w-full border-b border-[#eadcc9] bg-[#fbf7f1]/90 px-5 py-3 shadow-[0_16px_40px_rgba(31,20,14,0.08)] backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between rounded-2xl border border-[#ece0d0] bg-white/75 px-4 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] md:px-5">
+    <nav
+      className={`sticky top-0 left-0 z-50 w-full border-b transition-all duration-500 ${
+        scrolled
+          ? 'border-brand/15 bg-background/85 py-2 shadow-[0_16px_40px_rgba(31,20,14,0.1)] backdrop-blur-2xl'
+          : 'border-transparent bg-background/60 py-3 backdrop-blur-md'
+      } px-5`}
+    >
+      <div
+        className={`mx-auto flex max-w-7xl items-center justify-between rounded-2xl border bg-white/75 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-500 md:px-5 ${
+          scrolled ? 'border-[#ece0d0] px-4 py-1.5' : 'border-[#ece0d0]/70 px-4 py-2'
+        }`}
+      >
 
         {/* LOGO */}
         <Link href="/" className="z-[60] flex items-center gap-2">
@@ -58,44 +79,52 @@ export const Navbar = () => {
           >
             <button
               type="button"
-              className="flex items-center gap-1 py-3 text-sm font-semibold text-slate-700 transition-colors hover:text-[#A47148]"
+              className="flex items-center gap-1 py-3 text-sm font-semibold text-slate-700 transition-colors hover:text-brand"
             >
               Services
               <ArrowRight2 size={14} className={`rotate-90 transition-transform ${showMega ? 'translate-x-0.5' : ''}`} />
             </button>
-            {showMega && (
-              <div className="absolute left-[-180px] top-full z-[80] mt-4 w-[780px] rounded-3xl border border-[#eadccb] bg-white/95 p-6 shadow-[0_28px_70px_rgba(29,19,12,0.16)] backdrop-blur">
-                <div className="grid grid-cols-[1fr_1fr_1.1fr] gap-6">
-                  {serviceGroups.map((group) => (
-                    <div key={group.title}>
-                      <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-[#a47148]">{group.title}</p>
-                      <div className="space-y-2">
-                        {group.items.map((item) => (
-                          <Link key={item.name} href={item.path} className="group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-[#fff2e5] hover:text-[#8B5E3C]">
-                            <span className="text-[#a47148]">{item.icon}</span>
-                            {item.name}
-                          </Link>
-                        ))}
+            <AnimatePresence>
+              {showMega && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                  transition={{ duration: 0.32, ease }}
+                  className="absolute left-[-180px] top-full z-[80] mt-4 w-[780px] origin-top rounded-3xl border border-[#eadccb] bg-white/95 p-6 shadow-[0_28px_70px_rgba(29,19,12,0.16)] backdrop-blur"
+                >
+                  <div className="grid grid-cols-[1fr_1fr_1.1fr] gap-6">
+                    {serviceGroups.map((group) => (
+                      <div key={group.title}>
+                        <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-brand">{group.title}</p>
+                        <div className="space-y-2">
+                          {group.items.map((item) => (
+                            <Link key={item.name} href={item.path} className="group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-[#fff2e5] hover:text-brand-dark">
+                              <span className="text-brand">{item.icon}</span>
+                              {item.name}
+                            </Link>
+                          ))}
+                        </div>
                       </div>
+                    ))}
+                    <div className="rounded-2xl border border-[#eadccb] bg-gradient-to-br from-ink to-[#332417] p-5 text-white">
+                      <p className="text-xs font-black uppercase tracking-[0.18em] text-brand-tint">Premium Delivery</p>
+                      <h3 className="mt-3 text-2xl font-black leading-tight">Build platform profesional dengan desain yang benar-benar premium</h3>
+                      <Link href="/contact" className="mt-5 inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2 text-xs font-black uppercase tracking-wide text-white transition hover:bg-brand-dark">
+                        Konsultasi Sekarang
+                        <ArrowRight2 size={14} />
+                      </Link>
                     </div>
-                  ))}
-                  <div className="rounded-2xl border border-[#eadccb] bg-gradient-to-br from-[#161310] to-[#332417] p-5 text-white">
-                    <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f3c9a4]">Premium Delivery</p>
-                    <h3 className="mt-3 text-2xl font-black leading-tight">Build platform profesional dengan desain yang benar-benar premium</h3>
-                    <Link href="/contact" className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#A47148] px-4 py-2 text-xs font-black uppercase tracking-wide text-white transition hover:bg-[#8B5E3C]">
-                      Konsultasi Sekarang
-                      <ArrowRight2 size={14} />
-                    </Link>
                   </div>
-                </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
           {menuItems.map((item) => (
             <div key={item.name} className="relative group">
               <Link
                 href={item.path}
-                className="flex items-center gap-1 py-3 text-sm font-semibold text-slate-600 transition-colors hover:text-[#A47148]"
+                className="flex items-center gap-1 py-3 text-sm font-semibold text-slate-600 transition-colors hover:text-brand"
               >
                 {item.name}
               </Link>
@@ -107,7 +136,7 @@ export const Navbar = () => {
         <div className="hidden md:block">
           <Link
             href="/contact"
-            className="group flex items-center gap-2 rounded-full bg-[#A47148] px-6 py-2.5 text-white shadow-[0_12px_30px_rgba(164,113,72,0.3)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#8B5E3C]"
+            className="group flex items-center gap-2 rounded-full bg-brand px-6 py-2.5 text-white shadow-[0_12px_30px_rgba(164,113,72,0.3)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-dark"
           >
             <span className="text-sm font-semibold">Konsultasi Gratis</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform">
@@ -118,7 +147,7 @@ export const Navbar = () => {
 
         {/* HAMBURGER BUTTON */}
         <button
-          className="z-[60] text-[#A47148] md:hidden"
+          className="z-[60] text-brand md:hidden"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? (
@@ -138,7 +167,7 @@ export const Navbar = () => {
           ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}
         `}>
           <div className="w-full max-w-sm rounded-3xl border border-[#eadccb] bg-white p-4">
-            <p className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-[#a47148]">Services</p>
+            <p className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-brand">Services</p>
             {serviceGroups.flatMap((g) => g.items).map((item) => (
               <Link
                 key={item.name}
@@ -156,7 +185,7 @@ export const Navbar = () => {
               <Link
                 href={item.path}
                 onClick={() => setIsOpen(false)}
-                className="text-xl text-gray-700 font-medium hover:text-[#A47148]"
+                className="text-xl text-gray-700 font-medium hover:text-brand"
               >
                 {item.name}
               </Link>
@@ -166,7 +195,7 @@ export const Navbar = () => {
           <Link
             href="/contact"
             onClick={() => setIsOpen(false)}
-            className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#A47148] px-8 py-3 font-semibold text-white shadow-lg"
+            className="mt-4 inline-flex items-center gap-2 rounded-full bg-brand px-8 py-3 font-semibold text-white shadow-lg"
           >
             <Profile2User size={16} />
             Konsultasi Gratis

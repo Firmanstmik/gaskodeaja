@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import {
   ArrowRight2,
   Crown1,
@@ -15,6 +15,8 @@ import {
   TickCircle,
   TrendUp,
 } from "iconsax-react";
+import { Button } from "@/components/ui/Button";
+import { SectionKicker } from "@/components/ui/SectionKicker";
 
 type HomePremiumContentProps = {
   hero: {
@@ -54,7 +56,7 @@ type HomePremiumContentProps = {
   uri: string;
 };
 
-const section: any = {
+const section: Variants = {
   hidden: { opacity: 0, y: 34 },
   show: {
     opacity: 1,
@@ -63,12 +65,12 @@ const section: any = {
   },
 };
 
-const stagger: any = {
+const stagger: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.09 } },
 };
 
-const rise: any = {
+const rise: Variants = {
   hidden: { opacity: 0, y: 26 },
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 };
@@ -78,80 +80,6 @@ function splitLast(text: string) {
   const parts = text.trim().split(" ");
   if (parts.length < 2) return { head: "", tail: text };
   return { head: parts.slice(0, -1).join(" "), tail: parts[parts.length - 1] };
-}
-
-function Kicker({
-  children,
-  tone = "dark",
-  center = false,
-}: {
-  children: React.ReactNode;
-  tone?: "dark" | "light";
-  center?: boolean;
-}) {
-  return (
-    <span
-      className={`inline-flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-[0.3em] sm:gap-3 sm:text-[11px] sm:tracking-[0.34em] ${
-        tone === "light" ? "text-[#f3c9a4]" : "text-[#a47148]"
-      }`}
-    >
-      {!center && (
-        <span className={`h-px w-6 sm:w-8 ${tone === "light" ? "bg-[#f3c9a4]/60" : "bg-[#a47148]/50"}`} />
-      )}
-      {children}
-      {center && (
-        <span className={`h-px w-6 sm:w-8 ${tone === "light" ? "bg-[#f3c9a4]/60" : "bg-[#a47148]/50"}`} />
-      )}
-    </span>
-  );
-}
-
-/** Premium primary CTA — full-width & tappable on mobile, auto on desktop. */
-function CtaPrimary({
-  href,
-  children,
-  variant = "bronze",
-}: {
-  href: string;
-  children: React.ReactNode;
-  variant?: "bronze" | "cream";
-}) {
-  const skin =
-    variant === "cream"
-      ? "from-[#f7e6d0] to-[#e6c39d] text-[#100d0a] shadow-[0_20px_50px_-16px_rgba(243,201,164,0.6)]"
-      : "from-[#c08a5c] via-[#a97650] to-[#8b5e3c] text-white shadow-[0_22px_50px_-14px_rgba(164,113,72,0.65)]";
-  return (
-    <a
-      href={href}
-      className={`btn-shine tap group relative inline-flex min-h-[3.35rem] w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-gradient-to-b ${skin} px-8 text-[15px] font-bold tracking-wide sm:w-auto sm:min-h-[3.5rem] hover:-translate-y-1`}
-    >
-      <span className="relative z-10 inline-flex items-center gap-3">{children}</span>
-    </a>
-  );
-}
-
-/** Ghost / secondary CTA. */
-function CtaGhost({
-  href,
-  children,
-  tone = "light",
-}: {
-  href: string;
-  children: React.ReactNode;
-  tone?: "light" | "dark";
-}) {
-  const skin =
-    tone === "dark"
-      ? "border-[#a47148]/30 text-[#3a2718] hover:border-[#a47148]/60 hover:bg-[#a47148]/[0.06]"
-      : "border-white/25 text-white/90 hover:border-white/50 hover:bg-white/[0.07]";
-  return (
-    <a
-      href={href}
-      className={`tap inline-flex min-h-[3.35rem] w-full items-center justify-center gap-3 rounded-full border px-8 text-[15px] font-bold tracking-wide backdrop-blur sm:w-auto sm:min-h-[3.5rem] ${skin}`}
-    >
-      {children}
-    </a>
-  );
 }
 
 export function HomePremiumContent({
@@ -220,14 +148,20 @@ export function HomePremiumContent({
   const ctaLink = hero?.cta_link || "/contact";
   const ctaText = hero?.cta_text || "Hubungi Kami";
 
+  // Cinematic scroll parallax — background drifts down, copy drifts up as the hero scrolls away.
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: heroProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const heroImageY = useTransform(heroProgress, [0, 1], ["0%", "14%"]);
+  const heroContentY = useTransform(heroProgress, [0, 1], ["0%", "-10%"]);
+
   return (
     <>
       {/* ─────────────────────── HERO ─────────────────────── */}
-      <section className="grain relative isolate overflow-hidden bg-[#100d0a]">
+      <section ref={heroRef} className="grain relative isolate overflow-hidden bg-[#100d0a]">
         {/* Base image */}
-        <div
+        <motion.div
           className="absolute inset-0 -z-20 bg-cover bg-center opacity-45"
-          style={{ backgroundImage: heroImage ? `url('${heroImage}')` : undefined }}
+          style={{ backgroundImage: heroImage ? `url('${heroImage}')` : undefined, y: heroImageY }}
         />
         {/* Cinematic wash */}
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(120%_120%_at_15%_0%,rgba(164,113,72,0.28)_0%,rgba(16,13,10,0)_45%),linear-gradient(115deg,rgba(12,10,8,0.98)_0%,rgba(12,10,8,0.86)_46%,rgba(12,10,8,0.5)_100%)]" />
@@ -236,7 +170,7 @@ export function HomePremiumContent({
         <div className="animate-float-slow pointer-events-none absolute bottom-0 right-10 -z-10 h-80 w-80 rounded-full bg-[#f3c9a4]/15 blur-[130px] [animation-delay:-4s]" />
 
         <div className="mx-auto grid min-h-[calc(100svh-84px)] max-w-7xl items-center gap-12 px-5 pb-16 pt-16 sm:px-6 sm:pb-24 sm:pt-20 lg:min-h-[calc(100vh-84px)] lg:grid-cols-[1.08fr_0.92fr] lg:gap-14 lg:pb-28 lg:pt-24">
-          <motion.div initial="hidden" animate="show" variants={stagger}>
+          <motion.div initial="hidden" animate="show" variants={stagger} style={{ y: heroContentY }}>
             <motion.p variants={rise} className="mb-7 sm:mb-9">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.24em] text-[#f3c9a4] backdrop-blur sm:gap-2.5 sm:px-5 sm:py-2.5 sm:text-[11px] sm:tracking-[0.28em]">
                 <Crown1 size={14} className="text-[#f3c9a4]" variant="Bulk" />
@@ -264,11 +198,11 @@ export function HomePremiumContent({
               variants={rise}
               className="mt-8 flex flex-col items-stretch gap-3 sm:mt-11 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4"
             >
-              <CtaPrimary href={ctaLink}>
+              <Button href={ctaLink}>
                 {ctaText}
                 <ArrowRight2 size={18} className="transition-transform duration-300 group-hover:translate-x-1" />
-              </CtaPrimary>
-              <CtaGhost href="#services">Jelajahi Layanan</CtaGhost>
+              </Button>
+              <Button href="#services" variant="ghost">Jelajahi Layanan</Button>
             </motion.div>
 
             {/* Mobile showcase visual */}
@@ -388,8 +322,9 @@ export function HomePremiumContent({
             { value: `${services.length}+`, label: "Digital Services" },
             { value: `${testimonial.length}+`, label: "Happy Clients" },
           ].map((item) => (
-            <div key={item.label} className="px-2 py-6 text-center sm:px-10 sm:py-8">
-              <p className="font-display text-3xl font-medium tracking-tight text-[#100d0a] sm:text-5xl md:text-6xl">
+            <div key={item.label} className="group relative px-2 py-6 text-center sm:px-10 sm:py-8">
+              <span className="absolute inset-x-6 top-0 h-px origin-center scale-x-0 bg-[#a47148] transition-transform duration-500 ease-out group-hover:scale-x-100 sm:inset-x-10" />
+              <p className="font-display text-3xl font-medium tracking-tight text-[#100d0a] transition-transform duration-500 group-hover:-translate-y-0.5 sm:text-5xl md:text-6xl">
                 {item.value}
               </p>
               <p className="mt-1.5 text-[10px] font-semibold uppercase leading-tight tracking-[0.16em] text-slate-500 sm:mt-2 sm:text-xs sm:tracking-[0.22em]">
@@ -410,7 +345,7 @@ export function HomePremiumContent({
             variants={section}
             className="lg:sticky lg:top-28 lg:h-fit"
           >
-            <Kicker>Why Choose Us</Kicker>
+            <SectionKicker>Why Choose Us</SectionKicker>
             <h2 className="mt-5 text-balance font-display text-[2.35rem] font-light leading-[1.05] tracking-[-0.02em] text-[#100d0a] sm:mt-6 sm:text-5xl md:text-6xl">
               {opening?.pernyataan || "Mengapa Memilih Kami"}
             </h2>
@@ -438,7 +373,9 @@ export function HomePremiumContent({
               <motion.div
                 key={item.title}
                 variants={rise}
-                className="card-sheen tap group relative overflow-hidden rounded-[1.5rem] border border-[#a47148]/15 bg-white p-6 hover:-translate-y-1.5 hover:border-[#a47148]/35 hover:shadow-[0_28px_55px_-24px_rgba(43,28,17,0.35)] sm:rounded-[1.6rem] sm:p-8"
+                className={`${idx === 0 ? "gradient-frame" : "card-sheen"} tap group relative overflow-hidden rounded-[1.5rem] border border-[#a47148]/15 bg-white p-6 hover:-translate-y-1.5 hover:border-[#a47148]/35 hover:shadow-[0_28px_55px_-24px_rgba(43,28,17,0.35)] sm:rounded-[1.6rem] sm:p-8 ${
+                  idx % 2 === 1 ? "sm:translate-y-6" : ""
+                }`}
               >
                 <span className="absolute right-5 top-5 font-display text-4xl font-light text-[#a47148]/15 transition-colors duration-300 group-hover:text-[#a47148]/30 sm:right-6 sm:top-6">
                   0{idx + 1}
@@ -469,7 +406,7 @@ export function HomePremiumContent({
         >
           <div className="mb-10 flex flex-col gap-6 sm:mb-16 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-8">
             <div className="max-w-2xl">
-              <Kicker tone="light">Services</Kicker>
+              <SectionKicker tone="light">Services</SectionKicker>
               <h2 className="mt-5 text-balance font-display text-[2.35rem] font-light leading-[1.05] tracking-[-0.02em] sm:mt-6 sm:text-5xl md:text-6xl">
                 Layanan Digital <span className="text-gold-gradient italic">Profesional</span>
               </h2>
@@ -492,8 +429,16 @@ export function HomePremiumContent({
                 key={service.id}
                 href="/service"
                 variants={rise}
-                className="group relative flex flex-col bg-[#100d0a] p-7 transition-colors duration-300 hover:bg-[#181410] sm:p-9"
+                className={`group relative flex flex-col bg-[#100d0a] p-7 transition-colors duration-300 hover:bg-[#181410] sm:p-9 ${
+                  idx === 0 ? "md:col-span-2 lg:col-span-2" : ""
+                }`}
               >
+                {/* Corner brackets — fade in on hover, viewfinder-style */}
+                <span className="pointer-events-none absolute left-3 top-3 h-3 w-3 border-l border-t border-[#f3c9a4]/0 transition-colors duration-500 group-hover:border-[#f3c9a4]/50" />
+                <span className="pointer-events-none absolute right-3 top-3 h-3 w-3 border-r border-t border-[#f3c9a4]/0 transition-colors duration-500 group-hover:border-[#f3c9a4]/50" />
+                <span className="pointer-events-none absolute bottom-3 left-3 h-3 w-3 border-b border-l border-[#f3c9a4]/0 transition-colors duration-500 group-hover:border-[#f3c9a4]/50" />
+                <span className="pointer-events-none absolute bottom-3 right-3 h-3 w-3 border-b border-r border-[#f3c9a4]/0 transition-colors duration-500 group-hover:border-[#f3c9a4]/50" />
+
                 <div className="mb-6 flex items-center justify-between sm:mb-7">
                   <div className="inline-flex rounded-2xl bg-[#a47148]/15 p-3.5 text-[#f3c9a4] ring-1 ring-[#f3c9a4]/10">
                     <TickCircle size={22} variant="Bulk" />
@@ -504,9 +449,14 @@ export function HomePremiumContent({
                 </div>
                 <h3 className="font-display text-xl font-medium tracking-tight sm:text-2xl">{service.title}</h3>
                 <p className="mt-3 flex-1 text-sm leading-7 text-white/60 sm:mt-4">{service.description}</p>
-                <span className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-[#f3c9a4] transition-all duration-300 sm:mt-7 sm:opacity-0 sm:group-hover:opacity-100">
-                  Selengkapnya
-                  <ArrowRight2 size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
+                <span className="relative mt-6 inline-flex w-fit items-center gap-2 overflow-hidden rounded-full px-1 py-1 text-xs font-bold uppercase tracking-[0.18em] text-[#f3c9a4] sm:mt-7">
+                  <span className="cta-wipe-fill bg-white/10" />
+                  <span className="cta-wipe-label relative z-10">
+                    <span>Selengkapnya</span>
+                  </span>
+                  <span className="cta-wipe-arrow relative z-10">
+                    <ArrowRight2 size={14} />
+                  </span>
                 </span>
               </motion.a>
             ))}
@@ -525,7 +475,7 @@ export function HomePremiumContent({
         >
           <div className="mb-10 text-center sm:mb-16">
             <div className="flex justify-center">
-              <Kicker center>Selected Works</Kicker>
+              <SectionKicker center>Selected Works</SectionKicker>
             </div>
             <h2 className="mt-5 text-balance font-display text-[2.35rem] font-light leading-[1.05] tracking-[-0.02em] text-[#100d0a] sm:mt-6 sm:text-5xl md:text-6xl">
               Karya Yang Sudah Kami <span className="text-gold-gradient italic">Deliver</span>
@@ -540,16 +490,22 @@ export function HomePremiumContent({
                 variants={rise}
                 className="tap group relative flex flex-col overflow-hidden rounded-[1.6rem] border border-[#a47148]/15 bg-white shadow-[0_18px_40px_-24px_rgba(58,36,20,0.35)] duration-500 hover:-translate-y-2 hover:shadow-[0_36px_70px_-28px_rgba(58,36,20,0.5)] sm:rounded-[1.8rem]"
               >
-                <div className="relative overflow-hidden bg-[#f4ece2]">
-                  <img
-                    src={`${uri}/${item.image_thumbnail}`}
-                    className="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    alt={item.title}
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#100d0a]/70 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                <div className="relative bg-[#f4ece2]">
+                  <div className="overflow-hidden">
+                    <img
+                      src={`${uri}/${item.image_thumbnail}`}
+                      className="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      alt={item.title}
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#100d0a]/70 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  </div>
                   <span className="absolute left-4 top-4 rounded-full bg-black/45 px-3 py-1 font-mono text-[10px] tracking-widest text-white backdrop-blur sm:left-5 sm:top-5">
                     {String(idx + 1).padStart(2, "0")}
+                  </span>
+                  {/* Overlap CTA — straddles the image/content seam */}
+                  <span className="tap absolute bottom-0 right-6 z-10 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full border-[3px] border-white bg-[#a47148] text-white shadow-[0_12px_30px_-8px_rgba(164,113,72,0.65)] transition-all duration-500 group-hover:-translate-y-[65%] group-hover:rotate-45">
+                    <ArrowRight2 size={20} />
                   </span>
                 </div>
                 <div className="flex flex-1 flex-col p-6 sm:p-7">
@@ -584,7 +540,7 @@ export function HomePremiumContent({
           className="mx-auto max-w-7xl"
         >
           <div className="mb-10 max-w-3xl sm:mb-14">
-            <Kicker>Testimonials</Kicker>
+            <SectionKicker>Testimonials</SectionKicker>
             <h2 className="mt-5 text-balance font-display text-[2.35rem] font-light leading-[1.05] tracking-[-0.02em] text-[#100d0a] sm:mt-6 sm:text-5xl md:text-6xl">
               Dipercaya, <span className="text-gold-gradient italic">Direkomendasikan</span>
             </h2>
@@ -615,27 +571,34 @@ export function HomePremiumContent({
               </div>
             )}
 
-            {/* Supporting quotes */}
+            {/* Supporting quotes — independent idle float + slight tilt for an editorial, scattered feel */}
             <div className="grid gap-5 sm:gap-7">
-              {(restTestimonials.length ? restTestimonials : testimonial).slice(0, 2).map((testi) => (
+              {(restTestimonials.length ? restTestimonials : testimonial).slice(0, 2).map((testi, i) => (
                 <div
                   key={testi.id}
-                  className="tap flex h-full flex-col justify-between rounded-[1.5rem] border border-[#a47148]/15 bg-white p-6 shadow-[0_14px_34px_-24px_rgba(58,36,20,0.4)] hover:-translate-y-1 hover:border-[#a47148]/30 sm:rounded-[1.8rem] sm:p-8"
+                  className={`transition-transform duration-500 hover:rotate-0 ${i % 2 === 0 ? "sm:-rotate-1" : "sm:rotate-1"}`}
                 >
-                  <div>
-                    <div className="flex gap-1 text-[#a47148]">
-                      {[...Array(testi.rating)].map((_, i) => (
-                        <Star1 key={i} size={15} variant="Bold" />
-                      ))}
+                  <motion.div
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ duration: 5 + i, repeat: Infinity, ease: "easeInOut", delay: i * 0.6 }}
+                  >
+                    <div className="tap flex h-full flex-col justify-between rounded-[1.5rem] border border-[#a47148]/15 bg-white p-6 shadow-[0_14px_34px_-24px_rgba(58,36,20,0.4)] hover:-translate-y-1 hover:border-[#a47148]/30 sm:rounded-[1.8rem] sm:p-8">
+                      <div>
+                        <div className="flex gap-1 text-[#a47148]">
+                          {[...Array(testi.rating)].map((_, s) => (
+                            <Star1 key={s} size={15} variant="Bold" />
+                          ))}
+                        </div>
+                        <p className="mt-4 text-[15px] leading-7 text-slate-600">“{testi.content}”</p>
+                      </div>
+                      <div className="mt-6 border-t border-[#a47148]/12 pt-5">
+                        <h4 className="font-display text-lg font-medium text-[#100d0a]">{testi.name}</h4>
+                        <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.18em] text-[#a47148]">
+                          {testi.position}
+                        </p>
+                      </div>
                     </div>
-                    <p className="mt-4 text-[15px] leading-7 text-slate-600">“{testi.content}”</p>
-                  </div>
-                  <div className="mt-6 border-t border-[#a47148]/12 pt-5">
-                    <h4 className="font-display text-lg font-medium text-[#100d0a]">{testi.name}</h4>
-                    <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.18em] text-[#a47148]">
-                      {testi.position}
-                    </p>
-                  </div>
+                  </motion.div>
                 </div>
               ))}
             </div>
@@ -655,7 +618,7 @@ export function HomePremiumContent({
           <div className="pointer-events-none absolute -left-20 -top-20 -z-10 h-80 w-80 rounded-full bg-[#a47148]/25 blur-[120px]" />
           <div className="pointer-events-none absolute -bottom-24 right-0 -z-10 h-80 w-80 rounded-full bg-[#f3c9a4]/12 blur-[130px]" />
           <div className="max-w-2xl">
-            <Kicker tone="light">Let&apos;s Build Together</Kicker>
+            <SectionKicker tone="light">Let&apos;s Build Together</SectionKicker>
             <h2 className="mt-5 text-balance font-display text-[2.35rem] font-light leading-[1.05] tracking-[-0.02em] sm:mt-6 sm:text-5xl md:text-6xl">
               {closing?.pernyataan || "Siap Memulai Proyek Anda?"}
             </h2>
@@ -664,14 +627,14 @@ export function HomePremiumContent({
                 "Hubungi tim kami untuk konsultasi gratis dan wujudkan platform digital berkelas untuk bisnis Anda."}
             </p>
             <div className="mt-8 flex flex-col items-stretch gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
-              <CtaPrimary href={ctaLink} variant="cream">
+              <Button href={ctaLink} tone="cream">
                 {hero?.cta_text ?? "Hubungi Kami Sekarang"}
                 <MessageQuestion size={18} className="transition-transform duration-300 group-hover:rotate-12" />
-              </CtaPrimary>
-              <CtaGhost href="/portfolio">
+              </Button>
+              <Button href="/portfolio" variant="ghost">
                 Lihat Portfolio
                 <ArrowRight2 size={16} />
-              </CtaGhost>
+              </Button>
             </div>
           </div>
         </div>

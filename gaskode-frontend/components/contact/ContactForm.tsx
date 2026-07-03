@@ -80,11 +80,11 @@ export function ContactForm({ ctaLink, fallbackNumber }: ContactFormProps) {
 
   if (status === "success") {
     return (
-      <div className="flex h-full flex-col items-center justify-center rounded-[2rem] border border-[#eadcc9] bg-white p-10 text-center shadow-[0_16px_40px_rgba(44,30,20,0.08)]">
+      <div className="card-sheen flex h-full flex-col items-center justify-center rounded-[1.75rem] border border-[#a47148]/15 bg-white p-10 text-center shadow-[0_20px_50px_-24px_rgba(44,30,20,0.35)] sm:rounded-[2rem]">
         <div className="mb-5 inline-flex rounded-2xl bg-[#eafaf0] p-4 text-emerald-600">
           <TickCircle size={34} variant="Bulk" />
         </div>
-        <h3 className="text-2xl font-black tracking-[-0.02em] text-slate-900">Pesan Anda Terkirim!</h3>
+        <h3 className="font-display text-2xl font-medium tracking-tight text-slate-900">Pesan Anda Terkirim!</h3>
         <p className="mt-3 max-w-sm text-sm leading-7 text-slate-600">
           Terima kasih, {name.split(" ")[0] || "Sobat"}. Kami sudah menerima detail Anda
           {targetNumber ? " dan membuka WhatsApp untuk melanjutkan obrolan." : "."} Tim kami akan segera merespons.
@@ -97,7 +97,7 @@ export function ContactForm({ ctaLink, fallbackNumber }: ContactFormProps) {
             setWhatsapp("");
             setMessage("");
           }}
-          className="mt-7 inline-flex items-center gap-2 rounded-xl border border-[#eadcc9] px-5 py-3 text-sm font-bold text-[#A47148] transition hover:bg-[#fff3e6]"
+          className="tap mt-7 inline-flex items-center gap-2 rounded-xl border border-[#a47148]/25 px-5 py-3 text-sm font-bold text-[#a47148] transition hover:bg-[#fff3e6]"
         >
           Kirim pesan lain
         </button>
@@ -109,9 +109,9 @@ export function ContactForm({ ctaLink, fallbackNumber }: ContactFormProps) {
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="rounded-[2rem] border border-[#eadcc9] bg-white p-8 shadow-[0_16px_40px_rgba(44,30,20,0.08)]"
+      className="card-sheen rounded-[1.75rem] border border-[#a47148]/15 bg-white p-8 shadow-[0_20px_50px_-24px_rgba(44,30,20,0.3)] sm:rounded-[2rem]"
     >
-      <h3 className="text-3xl font-black tracking-[-0.02em] text-slate-900">Kirim Pesan Cepat</h3>
+      <h3 className="font-display text-3xl font-medium tracking-tight text-slate-900">Kirim Pesan Cepat</h3>
       <p className="mt-2 text-sm text-slate-500">
         Isi form di bawah, dan kami lanjutkan obrolan langsung via WhatsApp.
       </p>
@@ -128,8 +128,8 @@ export function ContactForm({ ctaLink, fallbackNumber }: ContactFormProps) {
             onChange={(e) => setName(e.target.value)}
             placeholder="Masukkan nama Anda"
             aria-invalid={!!errors.name}
-            className={`w-full rounded-xl border bg-[#fbf7f1] px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-[#A47148] focus:bg-white ${
-              errors.name ? "border-red-400" : "border-[#eadcc9]"
+            className={`w-full rounded-2xl border bg-[#fbf7f1] px-4 py-3.5 text-sm text-slate-800 outline-none transition focus:bg-white focus:ring-2 focus:ring-[#a47148]/25 placeholder:text-slate-400 ${
+              errors.name ? "border-red-400" : "border-[#eadcc9] focus:border-[#a47148]"
             }`}
           />
           {errors.name && (
@@ -151,8 +151,8 @@ export function ContactForm({ ctaLink, fallbackNumber }: ContactFormProps) {
             onChange={(e) => setWhatsapp(e.target.value)}
             placeholder="0812xxxxxxxx"
             aria-invalid={!!errors.whatsapp}
-            className={`w-full rounded-xl border bg-[#fbf7f1] px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-[#A47148] focus:bg-white ${
-              errors.whatsapp ? "border-red-400" : "border-[#eadcc9]"
+            className={`w-full rounded-2xl border bg-[#fbf7f1] px-4 py-3.5 text-sm text-slate-800 outline-none transition focus:bg-white focus:ring-2 focus:ring-[#a47148]/25 placeholder:text-slate-400 ${
+              errors.whatsapp ? "border-red-400" : "border-[#eadcc9] focus:border-[#a47148]"
             }`}
           />
           {errors.whatsapp && (
@@ -172,26 +172,28 @@ export function ContactForm({ ctaLink, fallbackNumber }: ContactFormProps) {
             onChange={(e) => setMessage(e.target.value)}
             rows={4}
             placeholder="Ceritakan rencana project Anda..."
-            className="w-full resize-none rounded-xl border border-[#eadcc9] bg-[#fbf7f1] px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-[#A47148] focus:bg-white"
+            className="w-full resize-none rounded-2xl border border-[#eadcc9] bg-[#fbf7f1] px-4 py-3.5 text-sm text-slate-800 outline-none transition focus:border-[#a47148] focus:bg-white focus:ring-2 focus:ring-[#a47148]/25 placeholder:text-slate-400"
           />
         </div>
 
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#A47148] px-5 py-4 text-sm font-black uppercase tracking-wide text-white shadow-[0_14px_30px_rgba(164,113,72,0.3)] transition hover:-translate-y-0.5 hover:bg-[#8B5E3C] disabled:cursor-not-allowed disabled:opacity-70"
+          className="btn-shine tap group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-b from-[#c08a5c] via-[#a97650] to-[#8b5e3c] px-5 py-4 text-sm font-bold uppercase tracking-wide text-white shadow-[0_22px_50px_-14px_rgba(164,113,72,0.65)] transition hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-70"
         >
-          {status === "submitting" ? (
-            <>
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-              Mengirim...
-            </>
-          ) : (
-            <>
-              {targetNumber ? <Whatsapp size={18} variant="Bulk" /> : <MessageQuestion size={18} />}
-              Kirim & Chat WhatsApp
-            </>
-          )}
+          <span className="relative z-10 inline-flex items-center gap-2">
+            {status === "submitting" ? (
+              <>
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                Mengirim...
+              </>
+            ) : (
+              <>
+                {targetNumber ? <Whatsapp size={18} variant="Bulk" /> : <MessageQuestion size={18} />}
+                Kirim & Chat WhatsApp
+              </>
+            )}
+          </span>
         </button>
 
         <p className="text-center text-xs text-slate-400">

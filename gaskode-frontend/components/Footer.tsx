@@ -26,6 +26,7 @@ const Facebook = ({ className }: { className?: string }) => (
 );
 
 import { Footer as FooterEntity } from '@/core/domain/entities/Footer';
+import { Button } from '@/components/ui/Button';
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -50,10 +51,12 @@ export default function Footer({ data }: { data: FooterEntity }) {
   const waNumber = data.phone?.replace(/[^0-9]/g, '');
 
   return (
-    <footer className="relative overflow-hidden bg-[#161310] px-6 pb-10 pt-20 text-white/70">
+    <footer className="relative overflow-hidden bg-ink px-6 pb-10 pt-20 text-white/70">
+      {/* Tone-blend seam: softens the hard cut from the cream page above into the ink footer */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-24 bg-gradient-to-b from-background/25 to-transparent" />
       {/* Ambient brand glow */}
-      <div className="pointer-events-none absolute -top-24 right-[-10%] h-72 w-72 rounded-full bg-[#a47148]/25 blur-[120px]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#a47148]/60 to-transparent" />
+      <div className="pointer-events-none absolute -top-24 right-[-10%] h-72 w-72 rounded-full bg-brand/25 blur-[120px]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand/60 to-transparent" />
 
       <div className="relative mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-12 pb-14 md:grid-cols-2 lg:grid-cols-12">
@@ -76,7 +79,7 @@ export default function Footer({ data }: { data: FooterEntity }) {
 
           {/* Navigation */}
           <div className="space-y-5 lg:col-span-2">
-            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-[#f3c9a4]">Navigasi</h4>
+            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-brand-tint">Navigasi</h4>
             <ul className="space-y-3 text-sm">
               {NAV_LINKS.map((item) => (
                 <FooterLink key={item.label} href={item.href} label={item.label} />
@@ -86,7 +89,7 @@ export default function Footer({ data }: { data: FooterEntity }) {
 
           {/* Services */}
           <div className="space-y-5 lg:col-span-3">
-            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-[#f3c9a4]">Layanan Kami</h4>
+            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-brand-tint">Layanan Kami</h4>
             <ul className="space-y-3 text-sm">
               {SERVICE_LINKS.map((label) => (
                 <FooterLink key={label} href="/service" label={label} />
@@ -96,38 +99,33 @@ export default function Footer({ data }: { data: FooterEntity }) {
 
           {/* Contact + CTA */}
           <div className="space-y-5 lg:col-span-3">
-            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-[#f3c9a4]">Hubungi Kami</h4>
+            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-brand-tint">Hubungi Kami</h4>
             <div className="space-y-3.5 text-sm">
               {data.address && (
                 <div className="flex items-start gap-3">
-                  <MapPin size={17} className="mt-0.5 shrink-0 text-[#a47148]" />
+                  <MapPin size={17} className="mt-0.5 shrink-0 text-brand" />
                   <span className="text-white/60">{data.address}</span>
                 </div>
               )}
               {data.email && (
                 <a href={`mailto:${data.email}`} className="flex items-center gap-3 text-white/60 transition-colors hover:text-white">
-                  <Mail size={17} className="shrink-0 text-[#a47148]" />
+                  <Mail size={17} className="shrink-0 text-brand" />
                   <span>{data.email}</span>
                 </a>
               )}
               {data.phone && (
                 <div className="flex items-center gap-3">
-                  <Phone size={17} className="shrink-0 text-[#a47148]" />
+                  <Phone size={17} className="shrink-0 text-brand" />
                   <span className="text-white/60">{data.phone}</span>
                 </div>
               )}
             </div>
 
             {waNumber && (
-              <Link
-                href={`https://wa.me/${waNumber}`}
-                target="_blank"
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#a47148] px-5 py-3 text-sm font-bold text-white shadow-[0_14px_30px_rgba(164,113,72,0.35)] transition-all hover:-translate-y-0.5 hover:bg-[#8b5e3c]"
-              >
+              <Button href={`https://wa.me/${waNumber}`} icon={<ArrowRight size={15} />}>
                 <MessageSquare size={17} />
-                <span>Konsultasi via WhatsApp</span>
-                <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
-              </Link>
+                Konsultasi via WhatsApp
+              </Button>
             )}
           </div>
         </div>
@@ -155,7 +153,7 @@ function SocialIcon({ link, icon, label }: { link: string | undefined; icon: Rea
       href={link}
       target="_blank"
       aria-label={label}
-      className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all hover:-translate-y-0.5 hover:border-[#a47148]/50 hover:bg-[#a47148]/20 hover:text-white"
+      className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all hover:-translate-y-0.5 hover:border-brand/50 hover:bg-brand/20 hover:text-white"
     >
       {icon}
     </Link>
@@ -169,7 +167,7 @@ function FooterLink({ href, label }: { href: string; label: string }) {
         href={href}
         className="group inline-flex items-center gap-1.5 text-white/60 transition-colors hover:text-white"
       >
-        <ArrowUpRight size={14} className="text-[#a47148] opacity-0 -translate-x-1 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
+        <ArrowUpRight size={14} className="text-brand opacity-0 -translate-x-1 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
         <span className="-ml-4 transition-all group-hover:ml-0">{label}</span>
       </Link>
     </li>
