@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -28,6 +29,10 @@ export const Navbar = () => {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  // Portal target must only be used client-side, after mount, to stay SSR-safe.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const menuItems = [
     { name: 'Home', path: '/' },
@@ -58,7 +63,7 @@ export const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 left-0 z-50 w-full transition-all duration-500 ${
+      className={`sticky top-0 left-0 z-[70] w-full transition-all duration-500 ${
         scrolled ? 'py-3' : 'py-4'
       } px-4 sm:px-5`}
     >
@@ -193,96 +198,144 @@ export const Navbar = () => {
           </Button>
         </div>
 
-        {/* HAMBURGER BUTTON */}
+        {/* HAMBURGER BUTTON — animated morph into an X, not an abrupt icon swap */}
         <button
-          className="z-[60] text-brand md:hidden"
+          className="tap z-[60] flex h-10 w-10 items-center justify-center rounded-full text-brand transition-colors hover:bg-brand/[0.08] md:hidden"
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isOpen ? 'Tutup menu' : 'Buka menu'}
+          aria-expanded={isOpen}
         >
-          {isOpen ? (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-            </svg>
-          )}
+          <span className="relative flex h-3.5 w-5 flex-col justify-between">
+            <motion.span
+              className="h-[2px] w-full origin-center rounded-full bg-current"
+              animate={isOpen ? { rotate: 45, y: 6.5 } : { rotate: 0, y: 0 }}
+              transition={{ duration: 0.35, ease }}
+            />
+            <motion.span
+              className="h-[2px] w-full rounded-full bg-current"
+              animate={{ opacity: isOpen ? 0 : 1, x: isOpen ? 6 : 0 }}
+              transition={{ duration: 0.25, ease }}
+            />
+            <motion.span
+              className="h-[2px] w-full origin-center rounded-full bg-current"
+              animate={isOpen ? { rotate: -45, y: -6.5 } : { rotate: 0, y: 0 }}
+              transition={{ duration: 0.35, ease }}
+            />
+          </span>
         </button>
 
-        {/* MOBILE BOTTOM-SHEET MENU */}
-        <AnimatePresence>
-          {isOpen && (
-            <>
+        {/* MOBILE BOTTOM-SHEET MENU — portaled to <body> so its `fixed` positioning
+            isn't trapped by the navbar's own backdrop-blur (which, like `transform`,
+            creates a new containing block for fixed-position descendants).
+            AnimatePresence lives INSIDE the portal, not around it — it needs a real
+            ReactElement child to clone for exit tracking, and a Portal object isn't one. */}
+        {mounted && createPortal(
+          <AnimatePresence>
+            {isOpen && (
+              <>
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
                 onClick={() => setIsOpen(false)}
-                className="fixed inset-0 z-[55] bg-ink/50 backdrop-blur-sm md:hidden"
+                className="fixed inset-0 z-[55] bg-ink/55 backdrop-blur-md md:hidden"
               />
               <motion.div
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
-                transition={{ duration: 0.45, ease }}
-                className="pb-safe fixed inset-x-0 bottom-0 z-[56] max-h-[85vh] overflow-y-auto rounded-t-[2rem] border-t border-[#eadccb] bg-[#fffaf3] px-5 pt-3 shadow-[0_-20px_60px_rgba(29,19,12,0.25)] md:hidden"
+                transition={{ duration: 0.5, ease }}
+                className="pb-safe fixed inset-x-0 bottom-0 z-[56] max-h-[88vh] overflow-y-auto rounded-t-[2.25rem] border-t border-[#eadccb] bg-gradient-to-b from-[#fffdf9] to-[#fdf5e9] px-5 pt-3 shadow-[0_-24px_70px_rgba(29,19,12,0.3)] md:hidden"
               >
-                <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-[#eadccb]" />
-                <button
-                  onClick={() => setIsOpen(false)}
-                  aria-label="Tutup menu"
-                  className="absolute right-5 top-5 text-brand/70"
+                <div className="mx-auto mb-5 h-1.5 w-12 rounded-full bg-[#eadccb]" />
+
+                <motion.div
+                  initial="hidden"
+                  animate="show"
+                  variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } } }}
                 >
-                  <CloseCircle size={22} variant="Bulk" />
-                </button>
-
-                <p className="mb-3 mt-2 text-xs font-black uppercase tracking-[0.2em] text-brand">Layanan</p>
-                <div className="mb-6 grid grid-cols-1 gap-1.5 rounded-2xl border border-[#eadccb] bg-white p-2">
-                  {serviceGroups.flatMap((g) => g.items).map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.path}
+                  {/* Header */}
+                  <motion.div
+                    variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
+                    className="mb-6 flex items-center justify-between"
+                  >
+                    <span className="font-display text-xl font-medium tracking-tight text-[#171310]">Menu</span>
+                    <button
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-[#fff3e0]"
+                      aria-label="Tutup menu"
+                      className="tap flex h-9 w-9 items-center justify-center rounded-full border border-[#eadccb] bg-white text-brand/70 shadow-sm"
                     >
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand">{item.icon}</span>
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
+                      <CloseCircle size={18} variant="Bulk" />
+                    </button>
+                  </motion.div>
 
-                <div className="mb-6 flex flex-col gap-1">
-                  {menuItems.map((item) => {
-                    const isActive = item.path === '/' ? pathname === '/' : pathname.startsWith(item.path);
-                    return (
+                  {/* Services — richer 2-col icon-badge grid */}
+                  <motion.p
+                    variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
+                    className="mb-3 text-[11px] font-black uppercase tracking-[0.24em] text-brand"
+                  >
+                    Layanan
+                  </motion.p>
+                  <motion.div
+                    variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
+                    className="mb-7 grid grid-cols-2 gap-2.5"
+                  >
+                    {serviceGroups.flatMap((g) => g.items).map((item) => (
                       <Link
                         key={item.name}
                         href={item.path}
                         onClick={() => setIsOpen(false)}
-                        className={`rounded-xl px-3 py-3 text-lg font-semibold transition hover:bg-white hover:text-brand ${
-                          isActive ? 'bg-white text-brand' : 'text-[#171310]'
-                        }`}
+                        className="tap group flex flex-col gap-2.5 rounded-2xl border border-[#eadccb] bg-white p-3.5 shadow-[0_10px_26px_-20px_rgba(43,28,17,0.4)] transition-all active:scale-[0.97]"
                       >
-                        {item.name}
+                        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#fff3e6] to-[#f3ddc0] text-brand transition-transform group-active:scale-95">
+                          {item.icon}
+                        </span>
+                        <span className="text-[13px] font-bold leading-tight text-slate-700">{item.name}</span>
                       </Link>
-                    );
-                  })}
-                </div>
+                    ))}
+                  </motion.div>
 
-                <Link
-                  href="/contact"
-                  onClick={() => setIsOpen(false)}
-                  className="mb-6 flex items-center justify-center gap-2 rounded-full bg-brand px-8 py-4 font-semibold text-white shadow-[0_16px_36px_-10px_rgba(164,113,72,0.55)]"
-                >
-                  <Profile2User size={16} />
-                  Konsultasi Gratis
-                </Link>
+                  {/* Nav links — left accent bar marks the active route */}
+                  <motion.div
+                    variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
+                    className="mb-7 flex flex-col divide-y divide-[#eadccb]/70 overflow-hidden rounded-2xl border border-[#eadccb] bg-white/70"
+                  >
+                    {menuItems.map((item) => {
+                      const isActive = item.path === '/' ? pathname === '/' : pathname.startsWith(item.path);
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.path}
+                          onClick={() => setIsOpen(false)}
+                          className={`tap relative flex items-center justify-between px-4 py-4 text-base font-semibold transition-colors active:bg-[#fff3e6] ${
+                            isActive ? 'text-brand' : 'text-[#171310]'
+                          }`}
+                        >
+                          <span
+                            className={`absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-brand transition-opacity ${
+                              isActive ? 'opacity-100' : 'opacity-0'
+                            }`}
+                          />
+                          {item.name}
+                          <ArrowRight2 size={15} className={isActive ? 'text-brand' : 'text-slate-300'} />
+                        </Link>
+                      );
+                    })}
+                  </motion.div>
+
+                  <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }} className="mb-6">
+                    <Button href="/contact" onClick={() => setIsOpen(false)} icon={<Profile2User size={16} />}>
+                      Konsultasi Gratis
+                    </Button>
+                  </motion.div>
+                </motion.div>
               </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+              </>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
       </div>
     </nav>
   );

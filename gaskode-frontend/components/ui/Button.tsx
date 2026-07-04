@@ -19,6 +19,8 @@ type ButtonProps = {
   icon?: ReactNode;
   className?: string;
   full?: boolean;
+  /** Optional extra click handler — useful for e.g. closing a mobile menu on tap. */
+  onClick?: () => void;
 };
 
 /**
@@ -35,12 +37,13 @@ export function Button({
   icon,
   className = "",
   full = true,
+  onClick,
 }: ButtonProps) {
   const isExternal = /^https?:\/\//.test(href) || href.startsWith("mailto:") || href.startsWith("tel:");
   const Tag = (isExternal ? "a" : Link) as ElementType;
   const tagProps: Record<string, unknown> = isExternal
-    ? { href, target: href.startsWith("http") ? "_blank" : undefined }
-    : { href };
+    ? { href, target: href.startsWith("http") ? "_blank" : undefined, onClick }
+    : { href, onClick };
 
   const widthCls = full ? "w-full sm:w-auto" : "";
 

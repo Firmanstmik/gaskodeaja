@@ -24,6 +24,7 @@ import { CornerFrame } from "@/components/ui/CornerFrame";
 import { TiltCard } from "@/components/ui/TiltCard";
 import { OverlapCTA } from "@/components/ui/OverlapCTA";
 import { useSpotlight } from "@/components/ui/Spotlight";
+import { CountUp } from "@/components/ui/CountUp";
 import { ease, ghostNumeral, heroH1, revealItem, revealLine, revealStagger, sectionH2 } from "@/lib/design-tokens";
 
 type HomePremiumContentProps = {
@@ -122,14 +123,6 @@ export function HomePremiumContent({
         opening?.jawaban?.[3] ||
         "Dukungan maintenance dan optimasi setelah project live.",
     },
-  ];
-
-  // Asymmetric bento layout: uneven spans + vertical offsets instead of a flat grid.
-  const benefitLayout = [
-    "lg:col-span-7",
-    "lg:col-span-5 lg:translate-y-10",
-    "lg:col-span-5",
-    "lg:col-span-7 lg:-translate-y-6",
   ];
 
   // Trust ribbon — real client names when available, otherwise disciplines.
@@ -361,19 +354,18 @@ export function HomePremiumContent({
       {/* ─────────────────────── STAT BAND — overlaps the hero's bottom edge ─────────────────────── */}
       <div className="relative z-10 mx-auto -mt-12 max-w-6xl px-5 sm:-mt-16 sm:px-6">
         <Reveal>
-          <div className="glass grid grid-cols-3 divide-x divide-[#a47148]/15 overflow-hidden rounded-[1.75rem] border border-white/60 shadow-[0_36px_80px_-30px_rgba(43,28,17,0.4)] sm:rounded-[2rem]">
+          <div className="glass relative grid grid-cols-3 divide-x divide-[#a47148]/15 overflow-hidden rounded-[1.75rem] border border-white/60 shadow-[0_36px_80px_-30px_rgba(43,28,17,0.4)] sm:rounded-[2rem]">
+            <span className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#a47148]/50 to-transparent" />
             {stats.map((item, idx) => {
               const StatIcon = statIcons[idx % statIcons.length];
               return (
-                <div key={item.label} className="group relative bg-white/95 px-2 py-6 text-center sm:px-10 sm:py-9">
+                <div key={item.label} className="group relative bg-white/95 px-2 py-6 text-center transition-colors duration-300 hover:bg-white sm:px-10 sm:py-9">
                   <span className="absolute inset-x-6 top-0 h-px origin-center scale-x-0 bg-[#a47148] transition-transform duration-500 ease-out group-hover:scale-x-100 sm:inset-x-10" />
-                  <StatIcon
-                    size={16}
-                    variant="Bold"
-                    className="mx-auto mb-2 hidden text-[#a47148]/50 transition-colors duration-300 group-hover:text-[#a47148] sm:mb-3 sm:block"
-                  />
+                  <span className="mx-auto mb-2.5 hidden h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#fff3e6] to-[#f3ddc0] text-[#a47148] shadow-[0_6px_16px_-8px_rgba(164,113,72,0.5)] transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 sm:mb-3 sm:flex">
+                    <StatIcon size={16} variant="Bold" />
+                  </span>
                   <p className="font-display text-4xl font-medium tracking-tight text-[#100d0a] transition-transform duration-500 group-hover:-translate-y-0.5 sm:text-5xl md:text-6xl">
-                    {item.value}
+                    <CountUp value={item.value} />
                   </p>
                   <p className="mt-1.5 text-[10px] font-semibold uppercase leading-tight tracking-[0.16em] text-slate-500 sm:mt-2 sm:text-xs sm:tracking-[0.22em]">
                     {item.label}
@@ -411,29 +403,29 @@ export function HomePremiumContent({
             whileInView="show"
             viewport={{ once: true, amount: 0.25 }}
             variants={revealStagger}
-            className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-12"
+            className="grid gap-5 sm:grid-cols-2"
           >
             {benefits.map((item, idx) => (
               <motion.div
                 key={item.title}
                 variants={revealItem}
                 onPointerMove={onSpotlightMove}
-                className={`${idx === 0 ? "gradient-frame" : "card-sheen"} corner-frame spotlight tap group relative overflow-hidden rounded-[1.5rem] border border-[#a47148]/15 bg-white p-6 hover:-translate-y-2 hover:border-[#a47148]/35 hover:shadow-[0_32px_65px_-24px_rgba(43,28,17,0.4)] sm:rounded-[1.6rem] sm:p-8 ${benefitLayout[idx % benefitLayout.length]}`}
+                className={`${idx === 0 ? "gradient-frame" : "card-sheen"} spotlight tap group relative flex h-full flex-col overflow-hidden rounded-[1.6rem] border border-[#a47148]/15 bg-white p-6 transition-all duration-500 hover:-translate-y-2 hover:border-[#a47148]/35 hover:shadow-[0_32px_65px_-24px_rgba(43,28,17,0.4)] sm:rounded-[1.75rem] sm:p-8`}
               >
-                {idx === 0 && (
-                  <>
-                    <span aria-hidden data-pos="tl" className="corner-frame-mark text-[#a47148]/0 transition-colors duration-500 group-hover:text-[#a47148]/60" />
-                    <span aria-hidden data-pos="br" className="corner-frame-mark text-[#a47148]/0 transition-colors duration-500 group-hover:text-[#a47148]/60" />
-                  </>
-                )}
-                <span className="absolute right-5 top-5 font-display text-4xl font-light text-[#a47148]/15 transition-colors duration-300 group-hover:text-[#a47148]/30 sm:right-6 sm:top-6">
-                  0{idx + 1}
-                </span>
-                <div className="mb-5 inline-flex rounded-2xl bg-[#fff5eb] p-3.5 ring-1 ring-[#a47148]/10 sm:mb-6">
-                  {item.icon}
+                {/* Wash that intensifies on hover — keeps the grid feeling tidy while still rich */}
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#fff8ee] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+                <div className="relative mb-5 flex items-center gap-4 sm:mb-6">
+                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#fff5eb] to-[#f3ddc0] ring-1 ring-[#a47148]/10 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3">
+                    {item.icon}
+                    <span className="absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#100d0a] font-mono text-[10px] font-bold text-[#f3c9a4] shadow-[0_4px_10px_-2px_rgba(0,0,0,0.4)]">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                  <h3 className="relative font-display text-lg font-medium text-[#100d0a] sm:text-xl">{item.title}</h3>
                 </div>
-                <h3 className="font-display text-lg font-medium text-[#100d0a] sm:text-xl">{item.title}</h3>
-                <p className="mt-2.5 text-[14px] leading-7 text-slate-600 sm:mt-3 sm:text-sm">{item.copy}</p>
+                <p className="relative text-[14px] leading-7 text-slate-600 sm:text-sm">{item.copy}</p>
+                <span className="relative mt-5 h-px w-8 origin-left scale-x-100 bg-[#a47148]/20 transition-all duration-500 group-hover:w-16 group-hover:bg-[#a47148]/60" />
               </motion.div>
             ))}
           </motion.div>
