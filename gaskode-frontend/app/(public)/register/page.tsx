@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { TickCircle, Warning2 } from "iconsax-react";
 import { AuthUseCase } from "@/core/application/use-cases/AuthUseCase";
+import { Magnetic } from "@/components/ui/Magnetic";
+import { CornerFrame } from "@/components/ui/CornerFrame";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -42,44 +46,57 @@ export default function RegisterPage() {
         }
     };
 
+    const inputClass =
+        "w-full rounded-2xl border border-white/15 bg-white/[0.05] px-4 py-3.5 text-sm text-white outline-none transition focus:border-[#f3c9a4]/60 focus:bg-white/[0.08] focus:ring-2 focus:ring-[#f3c9a4]/25 placeholder:text-white/30";
+
+    const backdrop = (
+        <>
+            <div className="absolute inset-0 -z-10 bg-[radial-gradient(120%_120%_at_15%_0%,rgba(164,113,72,0.28)_0%,rgba(16,13,10,0)_45%),linear-gradient(115deg,rgba(12,10,8,0.98)_0%,rgba(12,10,8,0.86)_46%,rgba(12,10,8,0.5)_100%)]" />
+            <div className="animate-float-slow pointer-events-none absolute -left-24 top-10 -z-10 h-72 w-72 rounded-full bg-[#a47148]/25 blur-[120px]" />
+            <div className="animate-float-slow pointer-events-none absolute bottom-0 right-10 -z-10 h-80 w-80 rounded-full bg-[#f3c9a4]/15 blur-[130px] [animation-delay:-4s]" />
+        </>
+    );
+
     if (success) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-                <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md">
-                    <div className="text-green-500 text-5xl mb-4">✓</div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            <div className="grain relative isolate flex min-h-[calc(100svh-84px)] w-full items-center justify-center overflow-hidden bg-[#100d0a] px-5 py-16 sm:px-6">
+                {backdrop}
+                <CornerFrame tone="dark" className="glass-dark w-full max-w-md rounded-[1.9rem] border border-white/10 p-10 text-center shadow-[0_40px_90px_-30px_rgba(0,0,0,0.7)] sm:rounded-[2.2rem]">
+                    <div className="mx-auto mb-5 inline-flex rounded-2xl bg-emerald-400/15 p-4 text-emerald-300">
+                        <TickCircle size={34} variant="Bulk" />
+                    </div>
+                    <h2 className="font-display text-2xl font-medium tracking-tight text-white">
                         Registrasi Berhasil!
                     </h2>
-                    <p className="text-gray-600">
+                    <p className="mt-3 text-sm leading-7 text-white/60">
                         Akun Anda telah terdaftar. Silakan login menggunakan email dan
                         password Anda.
                     </p>
-                    <div className="mt-6 animate-pulse text-sm text-[#A47148]">
+                    <div className="mt-6 animate-pulse text-sm font-bold uppercase tracking-[0.16em] text-[#f3c9a4]">
                         Mengalihkan ke halaman login...
                     </div>
-                </div>
+                </CornerFrame>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center bg-gray-100 px-4">
-            {/* Card Form */}
-            <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+        <div className="grain relative isolate flex min-h-[calc(100svh-84px)] w-full items-center justify-center overflow-hidden bg-[#100d0a] px-5 py-16 sm:px-6">
+            {backdrop}
+            <CornerFrame tone="dark" className="glass-dark w-full max-w-md rounded-[1.9rem] border border-white/10 p-8 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.7)] sm:rounded-[2.2rem] sm:p-10">
                 <div className="mb-8 text-center">
-                    <h1 className="text-2xl font-bold text-[#A47148] text-center">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#f3c9a4]">Get Started</p>
+                    <h1 className="mt-4 font-display text-3xl font-light tracking-[-0.02em] text-white">
                         Register Gaskode
                     </h1>
-                    <p className="text-gray-500 mt-2">
+                    <p className="mt-2 text-sm text-white/50">
                         Silakan buat akun untuk berlangganan
                     </p>
                 </div>
-                <form
-                    onSubmit={handleSubmit}
-                    className="space-y-4 max-w-md mx-auto p-6"
-                >
+                <form onSubmit={handleSubmit} className="space-y-5">
                     {error && (
-                        <div className="bg-red-100 text-red-600 p-3 rounded-lg text-sm border border-red-200">
+                        <div className="flex items-center gap-2 rounded-2xl border border-red-400/30 bg-red-400/10 p-3 text-sm text-red-300">
+                            <Warning2 size={16} variant="Bulk" className="shrink-0" />
                             {error}
                         </div>
                     )}
@@ -88,7 +105,7 @@ export default function RegisterPage() {
                         required
                         type="text"
                         placeholder="Nama Lengkap"
-                        className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#A47148] focus:border-transparent transition-all"
+                        className={inputClass}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     />
 
@@ -96,7 +113,7 @@ export default function RegisterPage() {
                         required
                         type="email"
                         placeholder="Email"
-                        className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#A47148] focus:border-transparent transition-all"
+                        className={inputClass}
                         onChange={(e) =>
                             setFormData({ ...formData, email: e.target.value })
                         }
@@ -106,7 +123,7 @@ export default function RegisterPage() {
                         required
                         type="password"
                         placeholder="Password (Min. 8 Karakter)"
-                        className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#A47148] focus:border-transparent transition-all"
+                        className={inputClass}
                         onChange={(e) =>
                             setFormData({ ...formData, password: e.target.value })
                         }
@@ -116,7 +133,7 @@ export default function RegisterPage() {
                         required
                         type="password"
                         placeholder="Konfirmasi Password"
-                        className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#A47148] focus:border-transparent transition-all"
+                        className={inputClass}
                         onChange={(e) =>
                             setFormData({
                                 ...formData,
@@ -125,23 +142,24 @@ export default function RegisterPage() {
                         }
                     />
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className={`w-full bg-[#A47148] text-white py-3 rounded-xl font-bold transition-all ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#8b5e3c]"
-                            }`}
-                    >
-                        {loading ? "Sedang Mendaftar..." : "Daftar Sekarang"}
-                    </button>
+                    <Magnetic className="w-full">
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="btn-shine tap group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-b from-[#c08a5c] via-[#a97650] to-[#8b5e3c] px-5 py-4 text-sm font-bold uppercase tracking-wide text-white shadow-[0_22px_50px_-14px_rgba(164,113,72,0.65)] transition hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-70"
+                        >
+                            <span className="relative z-10">{loading ? "Sedang Mendaftar..." : "Daftar Sekarang"}</span>
+                        </button>
+                    </Magnetic>
 
-                    <p className="text-center text-sm text-gray-500 mt-4">
+                    <p className="text-center text-sm text-white/50">
                         Sudah punya akun?{" "}
-                        <a href="/login" className="text-[#A47148] font-bold">
+                        <Link href="/login" className="font-bold text-[#f3c9a4] hover:underline">
                             Login di sini
-                        </a>
+                        </Link>
                     </p>
                 </form>
-            </div>
+            </CornerFrame>
         </div>
     );
 }

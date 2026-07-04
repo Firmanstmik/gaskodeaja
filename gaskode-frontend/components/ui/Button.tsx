@@ -1,6 +1,9 @@
+"use client";
+
 import type { ElementType, ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight2 } from "iconsax-react";
+import { Magnetic } from "@/components/ui/Magnetic";
 
 type ButtonVariant = "primary" | "ghost" | "wipe";
 type ButtonTone = "bronze" | "cream" | "dark" | "light";
@@ -81,11 +84,13 @@ export function Button({
       ? "from-[#f7e6d0] to-[#e6c39d] text-[#100d0a] shadow-[0_20px_50px_-16px_rgba(243,201,164,0.6)]"
       : "from-[#c08a5c] via-[#a97650] to-[#8b5e3c] text-white shadow-[0_22px_50px_-14px_rgba(164,113,72,0.65)]";
   return (
-    <Tag
-      {...tagProps}
-      className={`btn-shine tap group relative inline-flex min-h-[3.35rem] ${widthCls} items-center justify-center gap-3 overflow-hidden rounded-full bg-gradient-to-b ${skin} px-8 text-[15px] font-bold tracking-wide hover:-translate-y-1 ${className}`}
-    >
-      <span className="relative z-10 inline-flex items-center gap-3">{children}</span>
-    </Tag>
+    <Magnetic className={widthCls}>
+      <Tag
+        {...tagProps}
+        className={`btn-shine tap group relative inline-flex min-h-[3.35rem] w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-gradient-to-b ${skin} px-8 text-[15px] font-bold tracking-wide hover:-translate-y-1 ${className}`}
+      >
+        <span className="relative z-10 inline-flex items-center gap-3">{children}</span>
+      </Tag>
+    </Magnetic>
   );
 }

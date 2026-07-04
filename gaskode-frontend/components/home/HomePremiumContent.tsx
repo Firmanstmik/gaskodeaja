@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, type Variants } from "framer-motion";
+import Image from "next/image";
+import { motion, useScroll, useTransform } from "framer-motion";
 import {
   ArrowRight2,
   Crown1,
@@ -17,6 +18,12 @@ import {
 } from "iconsax-react";
 import { Button } from "@/components/ui/Button";
 import { SectionKicker } from "@/components/ui/SectionKicker";
+import { Reveal } from "@/components/ui/Reveal";
+import { Section } from "@/components/ui/Section";
+import { CornerFrame } from "@/components/ui/CornerFrame";
+import { TiltCard } from "@/components/ui/TiltCard";
+import { OverlapCTA } from "@/components/ui/OverlapCTA";
+import { ease, ghostNumeral, heroH1, revealItem, revealLine, revealStagger, sectionH2 } from "@/lib/design-tokens";
 
 type HomePremiumContentProps = {
   hero: {
@@ -56,26 +63,7 @@ type HomePremiumContentProps = {
   uri: string;
 };
 
-const section: Variants = {
-  hidden: { opacity: 0, y: 34 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
-  },
-};
-
-const stagger: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.09 } },
-};
-
-const rise: Variants = {
-  hidden: { opacity: 0, y: 26 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
-};
-
-/** Split a headline so the final word can receive the champagne accent. */
+/** Split a headline into two display lines so the final word can receive the champagne accent. */
 function splitLast(text: string) {
   const parts = text.trim().split(" ");
   if (parts.length < 2) return { head: "", tail: text };
@@ -135,6 +123,14 @@ export function HomePremiumContent({
     },
   ];
 
+  // Asymmetric bento layout: uneven spans + vertical offsets instead of a flat grid.
+  const benefitLayout = [
+    "lg:col-span-7",
+    "lg:col-span-5 lg:translate-y-10",
+    "lg:col-span-5",
+    "lg:col-span-7 lg:-translate-y-6",
+  ];
+
   // Trust ribbon — real client names when available, otherwise disciplines.
   const clients = portfolio.map((p) => p.client_name).filter(Boolean);
   const ribbon = (clients.length >= 4
@@ -148,6 +144,12 @@ export function HomePremiumContent({
   const ctaLink = hero?.cta_link || "/contact";
   const ctaText = hero?.cta_text || "Hubungi Kami";
 
+  const stats = [
+    { value: `${portfolio.length}+`, label: "Project Delivered" },
+    { value: `${services.length}+`, label: "Digital Services" },
+    { value: `${testimonial.length}+`, label: "Happy Clients" },
+  ];
+
   // Cinematic scroll parallax — background drifts down, copy drifts up as the hero scrolls away.
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress: heroProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
@@ -159,35 +161,47 @@ export function HomePremiumContent({
       {/* ─────────────────────── HERO ─────────────────────── */}
       <section ref={heroRef} className="grain relative isolate overflow-hidden bg-[#100d0a]">
         {/* Base image */}
-        <motion.div
-          className="absolute inset-0 -z-20 bg-cover bg-center opacity-45"
-          style={{ backgroundImage: heroImage ? `url('${heroImage}')` : undefined, y: heroImageY }}
-        />
+        <motion.div className="absolute inset-0 -z-20 overflow-hidden opacity-45" style={{ y: heroImageY }}>
+          {heroImage && (
+            <Image src={heroImage} alt="" fill priority sizes="100vw" className="object-cover object-center" />
+          )}
+        </motion.div>
         {/* Cinematic wash */}
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(120%_120%_at_15%_0%,rgba(164,113,72,0.28)_0%,rgba(16,13,10,0)_45%),linear-gradient(115deg,rgba(12,10,8,0.98)_0%,rgba(12,10,8,0.86)_46%,rgba(12,10,8,0.5)_100%)]" />
         {/* Floating champagne glow */}
         <div className="animate-float-slow pointer-events-none absolute -left-24 top-10 -z-10 h-72 w-72 rounded-full bg-[#a47148]/25 blur-[120px]" />
         <div className="animate-float-slow pointer-events-none absolute bottom-0 right-10 -z-10 h-80 w-80 rounded-full bg-[#f3c9a4]/15 blur-[130px] [animation-delay:-4s]" />
+        {/* Ghost brand watermark, sitting behind the headline for depth */}
+        <span aria-hidden className={`${ghostNumeral} pointer-events-none absolute -left-2 top-6 -z-10 text-white/[0.035] sm:top-2`}>
+          GK
+        </span>
 
         <div className="mx-auto grid min-h-[calc(100svh-84px)] max-w-7xl items-center gap-12 px-5 pb-16 pt-16 sm:px-6 sm:pb-24 sm:pt-20 lg:min-h-[calc(100vh-84px)] lg:grid-cols-[1.08fr_0.92fr] lg:gap-14 lg:pb-28 lg:pt-24">
-          <motion.div initial="hidden" animate="show" variants={stagger} style={{ y: heroContentY }}>
-            <motion.p variants={rise} className="mb-7 sm:mb-9">
+          <motion.div initial="hidden" animate="show" variants={revealStagger} style={{ y: heroContentY }}>
+            <motion.p variants={revealItem} className="mb-7 sm:mb-9">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.24em] text-[#f3c9a4] backdrop-blur sm:gap-2.5 sm:px-5 sm:py-2.5 sm:text-[11px] sm:tracking-[0.28em]">
                 <Crown1 size={14} className="text-[#f3c9a4]" variant="Bulk" />
                 AI-Ready Digital Studio
               </span>
             </motion.p>
 
-            <motion.h1
-              variants={rise}
-              className="text-balance font-display text-[2.7rem] font-light leading-[1.02] tracking-[-0.02em] text-white sm:text-6xl lg:text-[5.6rem] lg:leading-[0.98]"
-            >
-              {heroHead && <span>{heroHead} </span>}
-              <span className="text-gold-gradient italic">{heroTail}</span>
-            </motion.h1>
+            <motion.div variants={revealStagger} className={`${heroH1} text-white`}>
+              {heroHead && (
+                <span className="block overflow-hidden">
+                  <motion.span variants={revealLine} className="block">
+                    {heroHead}
+                  </motion.span>
+                </span>
+              )}
+              <span className="block overflow-hidden">
+                <motion.span variants={revealLine} className="block text-gold-gradient italic">
+                  {heroTail}
+                </motion.span>
+              </span>
+            </motion.div>
 
             <motion.p
-              variants={rise}
+              variants={revealItem}
               className="mt-6 max-w-xl text-pretty text-base leading-7 text-white/70 sm:mt-8 sm:text-lg sm:leading-8 md:text-xl"
             >
               {hero?.subtitle ||
@@ -195,7 +209,7 @@ export function HomePremiumContent({
             </motion.p>
 
             <motion.div
-              variants={rise}
+              variants={revealItem}
               className="mt-8 flex flex-col items-stretch gap-3 sm:mt-11 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4"
             >
               <Button href={ctaLink}>
@@ -206,14 +220,12 @@ export function HomePremiumContent({
             </motion.div>
 
             {/* Mobile showcase visual */}
-            <motion.div variants={rise} className="mt-10 lg:hidden">
-              <div className="card-sheen overflow-hidden rounded-[1.75rem] border border-white/12 bg-white/[0.05] p-2.5 shadow-[0_30px_70px_-30px_rgba(0,0,0,0.8)] backdrop-blur-xl">
+            <motion.div variants={revealItem} className="mt-10 lg:hidden">
+              <CornerFrame tone="dark" className="card-sheen overflow-hidden rounded-[1.75rem] border border-white/12 bg-white/[0.05] p-2.5 shadow-[0_30px_70px_-30px_rgba(0,0,0,0.8)] backdrop-blur-xl">
                 {heroImage ? (
-                  <img
-                    src={heroImage}
-                    alt={heroTitle}
-                    className="aspect-[16/10] w-full rounded-[1.35rem] object-cover"
-                  />
+                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.35rem]">
+                    <Image src={heroImage} alt={heroTitle} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
+                  </div>
                 ) : (
                   <div className="aspect-[16/10] w-full rounded-[1.35rem] bg-white/10" />
                 )}
@@ -231,12 +243,12 @@ export function HomePremiumContent({
                     </p>
                   </div>
                 </div>
-              </div>
+              </CornerFrame>
             </motion.div>
 
             {/* Micro trust line */}
             <motion.div
-              variants={rise}
+              variants={revealItem}
               className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-white/55 sm:mt-12 sm:gap-x-8 sm:gap-y-4"
             >
               <div className="flex items-center gap-2">
@@ -254,39 +266,39 @@ export function HomePremiumContent({
             </motion.div>
           </motion.div>
 
-          {/* Desktop showcase card */}
+          {/* Desktop showcase card — cursor-aware tilt + gallery corner frame */}
           <motion.div
             initial={{ opacity: 0, y: 40, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+            transition={{ duration: 0.9, ease, delay: 0.2 }}
             className="relative hidden lg:block"
           >
             <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[2.8rem] bg-gradient-to-br from-white/10 to-transparent blur-2xl" />
-            <div className="card-sheen rounded-[2.4rem] border border-white/15 bg-white/[0.06] p-3 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.8)] backdrop-blur-xl">
-              {heroImage ? (
-                <img
-                  src={heroImage}
-                  alt={heroTitle}
-                  className="aspect-[4/3] w-full rounded-[1.9rem] object-cover"
-                />
-              ) : (
-                <div className="aspect-[4/3] w-full rounded-[1.9rem] bg-white/10" />
-              )}
-              <div className="mt-3 flex items-center justify-between gap-4 rounded-[1.5rem] bg-black/35 px-6 py-5 text-white">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#f3c9a4]">
-                    Performance Focus
-                  </p>
-                  <p className="mt-1.5 font-display text-2xl font-medium">Fast · Scalable</p>
+            <TiltCard>
+              <CornerFrame tone="dark" className="card-sheen rounded-[2.4rem] border border-white/15 bg-white/[0.06] p-3 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.8)] backdrop-blur-xl">
+                {heroImage ? (
+                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.9rem]">
+                    <Image src={heroImage} alt={heroTitle} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
+                  </div>
+                ) : (
+                  <div className="aspect-[4/3] w-full rounded-[1.9rem] bg-white/10" />
+                )}
+                <div className="mt-3 flex items-center justify-between gap-4 rounded-[1.5rem] bg-black/35 px-6 py-5 text-white">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#f3c9a4]">
+                      Performance Focus
+                    </p>
+                    <p className="mt-1.5 font-display text-2xl font-medium">Fast · Scalable</p>
+                  </div>
+                  <div className="rounded-2xl bg-gradient-to-b from-white to-[#f3eadd] px-5 py-3 text-center text-[#100d0a]">
+                    <p className="font-display text-3xl font-semibold leading-none">{portfolio.length}+</p>
+                    <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.18em] text-[#8b5e3c]">
+                      Projects
+                    </p>
+                  </div>
                 </div>
-                <div className="rounded-2xl bg-gradient-to-b from-white to-[#f3eadd] px-5 py-3 text-center text-[#100d0a]">
-                  <p className="font-display text-3xl font-semibold leading-none">{portfolio.length}+</p>
-                  <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.18em] text-[#8b5e3c]">
-                    Projects
-                  </p>
-                </div>
-              </div>
-            </div>
+              </CornerFrame>
+            </TiltCard>
           </motion.div>
         </div>
 
@@ -308,45 +320,31 @@ export function HomePremiumContent({
         </div>
       </section>
 
-      {/* ─────────────────────── STAT BAND ─────────────────────── */}
-      <motion.section
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, amount: 0.4 }}
-        variants={section}
-        className="border-b border-[#a47148]/15 bg-[#fbf7f1] px-5 sm:px-6"
-      >
-        <div className="mx-auto grid max-w-6xl grid-cols-3 divide-x divide-[#a47148]/15 py-3 sm:py-4">
-          {[
-            { value: `${portfolio.length}+`, label: "Project Delivered" },
-            { value: `${services.length}+`, label: "Digital Services" },
-            { value: `${testimonial.length}+`, label: "Happy Clients" },
-          ].map((item) => (
-            <div key={item.label} className="group relative px-2 py-6 text-center sm:px-10 sm:py-8">
-              <span className="absolute inset-x-6 top-0 h-px origin-center scale-x-0 bg-[#a47148] transition-transform duration-500 ease-out group-hover:scale-x-100 sm:inset-x-10" />
-              <p className="font-display text-3xl font-medium tracking-tight text-[#100d0a] transition-transform duration-500 group-hover:-translate-y-0.5 sm:text-5xl md:text-6xl">
-                {item.value}
-              </p>
-              <p className="mt-1.5 text-[10px] font-semibold uppercase leading-tight tracking-[0.16em] text-slate-500 sm:mt-2 sm:text-xs sm:tracking-[0.22em]">
-                {item.label}
-              </p>
-            </div>
-          ))}
-        </div>
-      </motion.section>
+      {/* ─────────────────────── STAT BAND — overlaps the hero's bottom edge ─────────────────────── */}
+      <div className="relative z-10 mx-auto -mt-12 max-w-6xl px-5 sm:-mt-16 sm:px-6">
+        <Reveal>
+          <div className="glass grid grid-cols-3 divide-x divide-[#a47148]/15 overflow-hidden rounded-[1.75rem] border border-white/60 shadow-[0_36px_80px_-30px_rgba(43,28,17,0.4)] sm:rounded-[2rem]">
+            {stats.map((item) => (
+              <div key={item.label} className="group relative bg-white/95 px-2 py-7 text-center sm:px-10 sm:py-9">
+                <span className="absolute inset-x-6 top-0 h-px origin-center scale-x-0 bg-[#a47148] transition-transform duration-500 ease-out group-hover:scale-x-100 sm:inset-x-10" />
+                <p className="font-display text-3xl font-medium tracking-tight text-[#100d0a] transition-transform duration-500 group-hover:-translate-y-0.5 sm:text-5xl md:text-6xl">
+                  {item.value}
+                </p>
+                <p className="mt-1.5 text-[10px] font-semibold uppercase leading-tight tracking-[0.16em] text-slate-500 sm:mt-2 sm:text-xs sm:tracking-[0.22em]">
+                  {item.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </div>
 
-      {/* ─────────────────────── WHY CHOOSE US ─────────────────────── */}
-      <section className="px-5 py-16 sm:px-6 sm:py-24 lg:py-28">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
-          <motion.div
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.4 }}
-            variants={section}
-            className="lg:sticky lg:top-28 lg:h-fit"
-          >
+      {/* ─────────────────────── WHY CHOOSE US — asymmetric bento ─────────────────────── */}
+      <Section tone="cream" prevTone="ink" rhythm="tight" className="px-5 sm:px-6">
+        <div className="mx-auto grid max-w-7xl gap-10 pt-6 sm:pt-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
+          <Reveal className="lg:sticky lg:top-28 lg:h-fit">
             <SectionKicker>Why Choose Us</SectionKicker>
-            <h2 className="mt-5 text-balance font-display text-[2.35rem] font-light leading-[1.05] tracking-[-0.02em] text-[#100d0a] sm:mt-6 sm:text-5xl md:text-6xl">
+            <h2 className={`mt-5 sm:mt-6 ${sectionH2} text-[#100d0a]`}>
               {opening?.pernyataan || "Mengapa Memilih Kami"}
             </h2>
             <p className="mt-5 max-w-md text-pretty text-[15px] leading-7 text-slate-600 sm:mt-6 sm:text-base sm:leading-8">
@@ -360,23 +358,27 @@ export function HomePremiumContent({
               Kenali Kami
               <ArrowRight2 size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
             </a>
-          </motion.div>
+          </Reveal>
 
           <motion.div
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.25 }}
-            variants={stagger}
-            className="grid gap-4 sm:grid-cols-2 sm:gap-5"
+            variants={revealStagger}
+            className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-12"
           >
             {benefits.map((item, idx) => (
               <motion.div
                 key={item.title}
-                variants={rise}
-                className={`${idx === 0 ? "gradient-frame" : "card-sheen"} tap group relative overflow-hidden rounded-[1.5rem] border border-[#a47148]/15 bg-white p-6 hover:-translate-y-1.5 hover:border-[#a47148]/35 hover:shadow-[0_28px_55px_-24px_rgba(43,28,17,0.35)] sm:rounded-[1.6rem] sm:p-8 ${
-                  idx % 2 === 1 ? "sm:translate-y-6" : ""
-                }`}
+                variants={revealItem}
+                className={`${idx === 0 ? "gradient-frame" : "card-sheen"} corner-frame tap group relative overflow-hidden rounded-[1.5rem] border border-[#a47148]/15 bg-white p-6 hover:-translate-y-1.5 hover:border-[#a47148]/35 hover:shadow-[0_28px_55px_-24px_rgba(43,28,17,0.35)] sm:rounded-[1.6rem] sm:p-8 ${benefitLayout[idx % benefitLayout.length]}`}
               >
+                {idx === 0 && (
+                  <>
+                    <span aria-hidden data-pos="tl" className="corner-frame-mark text-[#a47148]/0 transition-colors duration-500 group-hover:text-[#a47148]/60" />
+                    <span aria-hidden data-pos="br" className="corner-frame-mark text-[#a47148]/0 transition-colors duration-500 group-hover:text-[#a47148]/60" />
+                  </>
+                )}
                 <span className="absolute right-5 top-5 font-display text-4xl font-light text-[#a47148]/15 transition-colors duration-300 group-hover:text-[#a47148]/30 sm:right-6 sm:top-6">
                   0{idx + 1}
                 </span>
@@ -389,25 +391,16 @@ export function HomePremiumContent({
             ))}
           </motion.div>
         </div>
-      </section>
+      </Section>
 
-      {/* ─────────────────────── SERVICES ─────────────────────── */}
-      <section
-        id="services"
-        className="grain relative isolate overflow-hidden bg-[#100d0a] px-5 py-16 text-white sm:px-6 sm:py-24 lg:py-28"
-      >
+      {/* ─────────────────────── SERVICES — off-grid bento ─────────────────────── */}
+      <Section id="services" tone="ink" prevTone="cream" className="grain relative isolate overflow-hidden px-5 text-white sm:px-6">
         <div className="pointer-events-none absolute -top-20 right-1/4 -z-10 h-80 w-80 rounded-full bg-[#a47148]/20 blur-[140px]" />
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={section}
-          className="mx-auto max-w-7xl"
-        >
+        <Reveal className="mx-auto max-w-7xl">
           <div className="mb-10 flex flex-col gap-6 sm:mb-16 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-8">
             <div className="max-w-2xl">
               <SectionKicker tone="light">Services</SectionKicker>
-              <h2 className="mt-5 text-balance font-display text-[2.35rem] font-light leading-[1.05] tracking-[-0.02em] sm:mt-6 sm:text-5xl md:text-6xl">
+              <h2 className={`mt-5 sm:mt-6 ${sectionH2} text-white`}>
                 Layanan Digital <span className="text-gold-gradient italic">Profesional</span>
               </h2>
             </div>
@@ -421,148 +414,148 @@ export function HomePremiumContent({
           </div>
 
           <motion.div
-            variants={stagger}
-            className="grid gap-px overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/10 sm:rounded-[2rem] md:grid-cols-2 lg:grid-cols-3"
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={revealStagger}
+            className="grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3"
           >
-            {services.map((service, idx) => (
-              <motion.a
-                key={service.id}
-                href="/service"
-                variants={rise}
-                className={`group relative flex flex-col bg-[#100d0a] p-7 transition-colors duration-300 hover:bg-[#181410] sm:p-9 ${
-                  idx === 0 ? "md:col-span-2 lg:col-span-2" : ""
-                }`}
-              >
-                {/* Corner brackets — fade in on hover, viewfinder-style */}
-                <span className="pointer-events-none absolute left-3 top-3 h-3 w-3 border-l border-t border-[#f3c9a4]/0 transition-colors duration-500 group-hover:border-[#f3c9a4]/50" />
-                <span className="pointer-events-none absolute right-3 top-3 h-3 w-3 border-r border-t border-[#f3c9a4]/0 transition-colors duration-500 group-hover:border-[#f3c9a4]/50" />
-                <span className="pointer-events-none absolute bottom-3 left-3 h-3 w-3 border-b border-l border-[#f3c9a4]/0 transition-colors duration-500 group-hover:border-[#f3c9a4]/50" />
-                <span className="pointer-events-none absolute bottom-3 right-3 h-3 w-3 border-b border-r border-[#f3c9a4]/0 transition-colors duration-500 group-hover:border-[#f3c9a4]/50" />
+            {services.map((service, idx) => {
+              const offsetCls = idx % 3 === 1 ? "lg:translate-y-8" : idx % 3 === 2 ? "lg:-translate-y-4" : "";
+              return (
+                <motion.a
+                  key={service.id}
+                  href="/service"
+                  variants={revealItem}
+                  className={`corner-frame group relative flex flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-7 transition-colors duration-300 hover:bg-white/[0.06] sm:rounded-[1.75rem] sm:p-9 ${
+                    idx === 0 ? "md:col-span-2 lg:col-span-2" : ""
+                  } ${offsetCls}`}
+                >
+                  <span aria-hidden data-pos="tl" className="corner-frame-mark text-[#f3c9a4]/0 transition-colors duration-500 group-hover:text-[#f3c9a4]/60" />
+                  <span aria-hidden data-pos="br" className="corner-frame-mark text-[#f3c9a4]/0 transition-colors duration-500 group-hover:text-[#f3c9a4]/60" />
 
-                <div className="mb-6 flex items-center justify-between sm:mb-7">
-                  <div className="inline-flex rounded-2xl bg-[#a47148]/15 p-3.5 text-[#f3c9a4] ring-1 ring-[#f3c9a4]/10">
-                    <TickCircle size={22} variant="Bulk" />
+                  <div className="mb-6 flex items-center justify-between sm:mb-7">
+                    <div className="inline-flex rounded-2xl bg-[#a47148]/15 p-3.5 text-[#f3c9a4] ring-1 ring-[#f3c9a4]/10">
+                      <TickCircle size={22} variant="Bulk" />
+                    </div>
+                    <span className="font-mono text-xs tracking-widest text-white/30">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
                   </div>
-                  <span className="font-mono text-xs tracking-widest text-white/30">
-                    {String(idx + 1).padStart(2, "0")}
+                  <h3 className="font-display text-xl font-medium tracking-tight sm:text-2xl">{service.title}</h3>
+                  <p className="mt-3 flex-1 text-sm leading-7 text-white/60 sm:mt-4">{service.description}</p>
+                  <span className="relative mt-6 inline-flex w-fit items-center gap-2 overflow-hidden rounded-full px-1 py-1 text-xs font-bold uppercase tracking-[0.18em] text-[#f3c9a4] sm:mt-7">
+                    <span className="cta-wipe-fill bg-white/10" />
+                    <span className="cta-wipe-label relative z-10">
+                      <span>Selengkapnya</span>
+                    </span>
+                    <span className="cta-wipe-arrow relative z-10">
+                      <ArrowRight2 size={14} />
+                    </span>
                   </span>
-                </div>
-                <h3 className="font-display text-xl font-medium tracking-tight sm:text-2xl">{service.title}</h3>
-                <p className="mt-3 flex-1 text-sm leading-7 text-white/60 sm:mt-4">{service.description}</p>
-                <span className="relative mt-6 inline-flex w-fit items-center gap-2 overflow-hidden rounded-full px-1 py-1 text-xs font-bold uppercase tracking-[0.18em] text-[#f3c9a4] sm:mt-7">
-                  <span className="cta-wipe-fill bg-white/10" />
-                  <span className="cta-wipe-label relative z-10">
-                    <span>Selengkapnya</span>
-                  </span>
-                  <span className="cta-wipe-arrow relative z-10">
-                    <ArrowRight2 size={14} />
-                  </span>
-                </span>
-              </motion.a>
-            ))}
+                </motion.a>
+              );
+            })}
           </motion.div>
-        </motion.div>
-      </section>
+        </Reveal>
+      </Section>
 
-      {/* ─────────────────────── SELECTED WORKS ─────────────────────── */}
-      <section className="px-5 py-16 sm:px-6 sm:py-24 lg:py-28">
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={section}
-          className="mx-auto max-w-7xl"
-        >
+      {/* ─────────────────────── SELECTED WORKS — full-bleed gallery ─────────────────────── */}
+      <Section tone="cream" prevTone="ink" className="px-5 sm:px-6">
+        <Reveal className="mx-auto max-w-7xl">
           <div className="mb-10 text-center sm:mb-16">
             <div className="flex justify-center">
               <SectionKicker center>Selected Works</SectionKicker>
             </div>
-            <h2 className="mt-5 text-balance font-display text-[2.35rem] font-light leading-[1.05] tracking-[-0.02em] text-[#100d0a] sm:mt-6 sm:text-5xl md:text-6xl">
+            <h2 className={`mt-5 sm:mt-6 ${sectionH2} text-[#100d0a]`}>
               Karya Yang Sudah Kami <span className="text-gold-gradient italic">Deliver</span>
             </h2>
           </div>
 
-          <motion.div variants={stagger} className="grid gap-5 sm:gap-7 md:grid-cols-2 xl:grid-cols-3">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={revealStagger}
+            className="grid gap-6 sm:gap-8 md:grid-cols-2 xl:grid-cols-3"
+          >
             {portfolio.map((item, idx) => (
-              <motion.a
+              <motion.div
                 key={item.id}
-                href="/portfolio"
-                variants={rise}
-                className="tap group relative flex flex-col overflow-hidden rounded-[1.6rem] border border-[#a47148]/15 bg-white shadow-[0_18px_40px_-24px_rgba(58,36,20,0.35)] duration-500 hover:-translate-y-2 hover:shadow-[0_36px_70px_-28px_rgba(58,36,20,0.5)] sm:rounded-[1.8rem]"
+                variants={revealItem}
+                className={`relative ${idx % 3 === 1 ? "md:translate-y-8" : ""}`}
               >
-                <div className="relative bg-[#f4ece2]">
-                  <div className="overflow-hidden">
-                    <img
-                      src={`${uri}/${item.image_thumbnail}`}
-                      className="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      alt={item.title}
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#100d0a]/70 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                <div className="tap group relative flex flex-col overflow-hidden rounded-[1.75rem] border border-[#a47148]/15 bg-white shadow-[0_20px_46px_-26px_rgba(58,36,20,0.4)] duration-500 hover:-translate-y-2 hover:shadow-[0_40px_80px_-30px_rgba(58,36,20,0.55)] sm:rounded-[2rem]">
+                  {/* Full-card link for click/keyboard access; OverlapCTA below is a separate, non-nested link */}
+                  <a href="/portfolio" aria-label={item.title} className="absolute inset-0 z-10" />
+                  <CornerFrame className="relative bg-[#f4ece2]">
+                    <div className="relative aspect-[4/5] w-full overflow-hidden">
+                      <Image
+                        src={`${uri}/${item.image_thumbnail}`}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                        alt={item.title}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#100d0a]/70 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                    </div>
+                    <span className="absolute left-4 top-4 rounded-full bg-black/45 px-3 py-1 font-mono text-[10px] tracking-widest text-white backdrop-blur sm:left-5 sm:top-5">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+                    <OverlapCTA href="/portfolio" label={`Lihat ${item.title}`} className="z-20" />
+                  </CornerFrame>
+                  <div className="flex flex-1 flex-col p-6 sm:p-7">
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-[#a47148]">
+                      <MonitorMobbile size={14} variant="Bulk" />
+                      {item.client_name}
+                    </span>
+                    <h3 className="mt-2.5 font-display text-xl font-medium tracking-tight text-[#100d0a] sm:text-2xl">
+                      {item.title}
+                    </h3>
+                    {item.solutions?.[0] && (
+                      <p className="mt-3 flex items-start gap-1.5 text-sm leading-7 text-slate-600">
+                        <PictureFrame size={15} variant="Bulk" className="mt-1 shrink-0 text-[#a47148]/60" />
+                        {item.solutions[0]}
+                      </p>
+                    )}
                   </div>
-                  <span className="absolute left-4 top-4 rounded-full bg-black/45 px-3 py-1 font-mono text-[10px] tracking-widest text-white backdrop-blur sm:left-5 sm:top-5">
-                    {String(idx + 1).padStart(2, "0")}
-                  </span>
-                  {/* Overlap CTA — straddles the image/content seam */}
-                  <span className="tap absolute bottom-0 right-6 z-10 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full border-[3px] border-white bg-[#a47148] text-white shadow-[0_12px_30px_-8px_rgba(164,113,72,0.65)] transition-all duration-500 group-hover:-translate-y-[65%] group-hover:rotate-45">
-                    <ArrowRight2 size={20} />
-                  </span>
                 </div>
-                <div className="flex flex-1 flex-col p-6 sm:p-7">
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-[#a47148]">
-                    <MonitorMobbile size={14} variant="Bulk" />
-                    {item.client_name}
-                  </span>
-                  <h3 className="mt-2.5 font-display text-xl font-medium tracking-tight text-[#100d0a] sm:text-2xl">
-                    {item.title}
-                  </h3>
-                  <div className="mt-4 flex-1 rounded-2xl bg-[#fbf7f1] p-4 sm:mt-5 sm:p-5">
-                    <p className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
-                      <PictureFrame size={14} variant="Bulk" />
-                      Highlight
-                    </p>
-                    <p className="mt-2 text-sm leading-7 text-slate-600 sm:mt-2.5">{item.solutions?.[0]}</p>
-                  </div>
-                </div>
-              </motion.a>
+              </motion.div>
             ))}
           </motion.div>
-        </motion.div>
-      </section>
+        </Reveal>
+      </Section>
 
-      {/* ─────────────────────── TESTIMONIALS ─────────────────────── */}
-      <section className="bg-[#f4ece2] px-5 py-16 sm:px-6 sm:py-24 lg:py-28">
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={section}
-          className="mx-auto max-w-7xl"
-        >
+      {/* ─────────────────────── TESTIMONIALS — oversized editorial quote ─────────────────────── */}
+      <Section tone="stone" prevTone="cream" className="px-5 sm:px-6">
+        <Reveal className="mx-auto max-w-7xl">
           <div className="mb-10 max-w-3xl sm:mb-14">
             <SectionKicker>Testimonials</SectionKicker>
-            <h2 className="mt-5 text-balance font-display text-[2.35rem] font-light leading-[1.05] tracking-[-0.02em] text-[#100d0a] sm:mt-6 sm:text-5xl md:text-6xl">
+            <h2 className={`mt-5 sm:mt-6 ${sectionH2} text-[#100d0a]`}>
               Dipercaya, <span className="text-gold-gradient italic">Direkomendasikan</span>
             </h2>
           </div>
 
-          <div className="grid gap-5 sm:gap-7 lg:grid-cols-[1.15fr_0.85fr]">
-            {/* Featured quote */}
+          <div className="grid gap-8 sm:gap-10 lg:grid-cols-[1.15fr_0.85fr]">
+            {/* Featured quote — oversized editorial type instead of a boxed card */}
             {featured && (
               <div className="grain relative isolate flex flex-col justify-between overflow-hidden rounded-[1.75rem] bg-[#100d0a] p-7 text-white sm:rounded-[2rem] sm:p-9 md:p-12">
                 <div className="pointer-events-none absolute -right-16 -top-16 -z-10 h-64 w-64 rounded-full bg-[#a47148]/25 blur-[110px]" />
-                <div>
+                <span aria-hidden className={`${ghostNumeral} pointer-events-none absolute -left-3 -top-10 -z-0 text-white/[0.05]`}>
+                  &ldquo;
+                </span>
+                <div className="relative">
                   <QuoteDown size={38} className="text-[#a47148]" variant="Bulk" />
                   <div className="mt-5 flex gap-1 text-[#f3c9a4] sm:mt-6">
                     {[...Array(featured.rating)].map((_, i) => (
                       <Star1 key={i} size={18} variant="Bold" />
                     ))}
                   </div>
-                  <p className="mt-5 text-balance font-display text-xl font-light leading-[1.5] text-white/90 sm:mt-6 sm:text-2xl md:text-3xl">
-                    “{featured.content}”
+                  <p className="mt-5 text-balance font-display text-2xl font-light leading-[1.4] text-white/90 sm:mt-6 sm:text-3xl md:text-4xl">
+                    &ldquo;{featured.content}&rdquo;
                   </p>
                 </div>
-                <div className="mt-8 border-t border-white/10 pt-6 sm:mt-10">
+                <div className="relative mt-8 border-t border-white/10 pt-6 sm:mt-10">
                   <h4 className="font-display text-lg font-medium sm:text-xl">{featured.name}</h4>
                   <p className="mt-1 text-xs font-bold uppercase tracking-[0.2em] text-[#f3c9a4]">
                     {featured.position}
@@ -571,8 +564,8 @@ export function HomePremiumContent({
               </div>
             )}
 
-            {/* Supporting quotes — independent idle float + slight tilt for an editorial, scattered feel */}
-            <div className="grid gap-5 sm:gap-7">
+            {/* Supporting quotes — idle float, asymmetric offset, overlapping the featured quote's edge */}
+            <div className="grid gap-6 sm:gap-7 lg:-ml-6 lg:mt-10">
               {(restTestimonials.length ? restTestimonials : testimonial).slice(0, 2).map((testi, i) => (
                 <div
                   key={testi.id}
@@ -582,14 +575,14 @@ export function HomePremiumContent({
                     animate={{ y: [0, -6, 0] }}
                     transition={{ duration: 5 + i, repeat: Infinity, ease: "easeInOut", delay: i * 0.6 }}
                   >
-                    <div className="tap flex h-full flex-col justify-between rounded-[1.5rem] border border-[#a47148]/15 bg-white p-6 shadow-[0_14px_34px_-24px_rgba(58,36,20,0.4)] hover:-translate-y-1 hover:border-[#a47148]/30 sm:rounded-[1.8rem] sm:p-8">
+                    <div className="tap flex h-full flex-col justify-between rounded-[1.5rem] border border-[#a47148]/15 bg-white p-6 shadow-[0_18px_40px_-26px_rgba(58,36,20,0.4)] hover:-translate-y-1 hover:border-[#a47148]/30 sm:rounded-[1.8rem] sm:p-8">
                       <div>
                         <div className="flex gap-1 text-[#a47148]">
                           {[...Array(testi.rating)].map((_, s) => (
                             <Star1 key={s} size={15} variant="Bold" />
                           ))}
                         </div>
-                        <p className="mt-4 text-[15px] leading-7 text-slate-600">“{testi.content}”</p>
+                        <p className="mt-4 text-[15px] leading-7 text-slate-600">&ldquo;{testi.content}&rdquo;</p>
                       </div>
                       <div className="mt-6 border-t border-[#a47148]/12 pt-5">
                         <h4 className="font-display text-lg font-medium text-[#100d0a]">{testi.name}</h4>
@@ -603,23 +596,20 @@ export function HomePremiumContent({
               ))}
             </div>
           </div>
-        </motion.div>
-      </section>
+        </Reveal>
+      </Section>
 
       {/* ─────────────────────── CLOSING CTA ─────────────────────── */}
-      <motion.section
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, amount: 0.35 }}
-        variants={section}
-        className="px-5 py-16 sm:px-6 sm:py-24 lg:py-28"
-      >
-        <div className="grain relative isolate mx-auto max-w-6xl overflow-hidden rounded-[1.9rem] bg-[#100d0a] px-6 py-14 text-white shadow-[0_50px_100px_-40px_rgba(18,13,9,0.8)] sm:rounded-[2.6rem] sm:px-8 sm:py-20 md:px-16 md:py-24">
+      <Section tone="cream" prevTone="stone" rhythm="cinematic" className="px-5 sm:px-6">
+        <Reveal className="grain relative isolate mx-auto max-w-6xl overflow-hidden rounded-[1.9rem] bg-[#100d0a] px-6 py-14 text-white shadow-[0_50px_100px_-40px_rgba(18,13,9,0.8)] sm:rounded-[2.6rem] sm:px-8 sm:py-20 md:px-16 md:py-24">
           <div className="pointer-events-none absolute -left-20 -top-20 -z-10 h-80 w-80 rounded-full bg-[#a47148]/25 blur-[120px]" />
           <div className="pointer-events-none absolute -bottom-24 right-0 -z-10 h-80 w-80 rounded-full bg-[#f3c9a4]/12 blur-[130px]" />
-          <div className="max-w-2xl">
+          <span aria-hidden className="pointer-events-none absolute -right-8 bottom-0 select-none text-[10rem] leading-none text-white/[0.04] sm:text-[14rem]">
+            ✦
+          </span>
+          <div className="relative max-w-2xl">
             <SectionKicker tone="light">Let&apos;s Build Together</SectionKicker>
-            <h2 className="mt-5 text-balance font-display text-[2.35rem] font-light leading-[1.05] tracking-[-0.02em] sm:mt-6 sm:text-5xl md:text-6xl">
+            <h2 className={`mt-5 sm:mt-6 ${sectionH2} text-white`}>
               {closing?.pernyataan || "Siap Memulai Proyek Anda?"}
             </h2>
             <p className="mt-5 max-w-xl text-pretty text-base leading-7 text-white/65 sm:mt-6 sm:text-lg sm:leading-8">
@@ -637,8 +627,8 @@ export function HomePremiumContent({
               </Button>
             </div>
           </div>
-        </div>
-      </motion.section>
+        </Reveal>
+      </Section>
 
       {/* ─────────── APP-STYLE STICKY ACTION BAR (mobile only) ─────────── */}
       <div

@@ -51,34 +51,32 @@ export default function Footer({ data }: { data: FooterEntity }) {
   const waNumber = data.phone?.replace(/[^0-9]/g, '');
 
   return (
-    <footer className="relative overflow-hidden bg-ink px-6 pb-10 pt-20 text-white/70">
+    <footer className="relative overflow-hidden bg-ink px-6 pb-10 pt-20 text-white/70 sm:pt-28">
       {/* Tone-blend seam: softens the hard cut from the cream page above into the ink footer */}
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-24 bg-gradient-to-b from-background/25 to-transparent" />
       {/* Ambient brand glow */}
       <div className="pointer-events-none absolute -top-24 right-[-10%] h-72 w-72 rounded-full bg-brand/25 blur-[120px]" />
+      <div className="pointer-events-none absolute -bottom-32 left-[-10%] h-72 w-72 rounded-full bg-brand-tint/10 blur-[140px]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand/60 to-transparent" />
 
       <div className="relative mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 gap-12 pb-14 md:grid-cols-2 lg:grid-cols-12">
-
-          {/* Brand */}
-          <div className="space-y-6 lg:col-span-4">
-            <span className="text-2xl font-black tracking-tight text-white">
-              {data.brandName}
-            </span>
-            <p className="max-w-sm text-sm leading-7 text-white/60">
-              {data.shortDescription}
-            </p>
-            <div className="flex gap-3">
-              <SocialIcon link={data.socialLinks?.instagram} label="Instagram" icon={<Instagram />} />
-              <SocialIcon link={data.socialLinks?.github} label="GitHub" icon={<Github />} />
-              <SocialIcon link={data.socialLinks?.linkedin} label="LinkedIn" icon={<Linkedin />} />
-              <SocialIcon link={data.socialLinks?.facebook} label="Facebook" icon={<Facebook />} />
-            </div>
+        {/* Editorial closing statement — replaces a flat "start of columns" opener */}
+        <div className="mb-16 border-b border-white/10 pb-14 sm:mb-20 sm:pb-16">
+          <span className="text-[11px] font-bold uppercase tracking-[0.32em] text-brand-tint">{data.brandName}</span>
+          <p className="font-display mt-5 max-w-3xl text-balance text-3xl font-light leading-[1.08] tracking-[-0.02em] text-white sm:text-5xl">
+            {data.shortDescription}
+          </p>
+          <div className="mt-8 flex gap-3">
+            <SocialIcon link={data.socialLinks?.instagram} label="Instagram" icon={<Instagram />} />
+            <SocialIcon link={data.socialLinks?.github} label="GitHub" icon={<Github />} />
+            <SocialIcon link={data.socialLinks?.linkedin} label="LinkedIn" icon={<Linkedin />} />
+            <SocialIcon link={data.socialLinks?.facebook} label="Facebook" icon={<Facebook />} />
           </div>
+        </div>
 
+        <div className="grid grid-cols-1 gap-12 pb-14 md:grid-cols-2 lg:grid-cols-12">
           {/* Navigation */}
-          <div className="space-y-5 lg:col-span-2">
+          <div className="space-y-5 lg:col-span-3">
             <h4 className="text-xs font-black uppercase tracking-[0.2em] text-brand-tint">Navigasi</h4>
             <ul className="space-y-3 text-sm">
               {NAV_LINKS.map((item) => (
@@ -98,7 +96,7 @@ export default function Footer({ data }: { data: FooterEntity }) {
           </div>
 
           {/* Contact + CTA */}
-          <div className="space-y-5 lg:col-span-3">
+          <div className="space-y-5 lg:col-span-6">
             <h4 className="text-xs font-black uppercase tracking-[0.2em] text-brand-tint">Hubungi Kami</h4>
             <div className="space-y-3.5 text-sm">
               {data.address && (
@@ -122,7 +120,7 @@ export default function Footer({ data }: { data: FooterEntity }) {
             </div>
 
             {waNumber && (
-              <Button href={`https://wa.me/${waNumber}`} icon={<ArrowRight size={15} />}>
+              <Button href={`https://wa.me/${waNumber}`} icon={<ArrowRight size={15} />} full={false}>
                 <MessageSquare size={17} />
                 Konsultasi via WhatsApp
               </Button>
@@ -163,12 +161,11 @@ function SocialIcon({ link, icon, label }: { link: string | undefined; icon: Rea
 function FooterLink({ href, label }: { href: string; label: string }) {
   return (
     <li>
-      <Link
-        href={href}
-        className="group inline-flex items-center gap-1.5 text-white/60 transition-colors hover:text-white"
-      >
-        <ArrowUpRight size={14} className="text-brand opacity-0 -translate-x-1 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
-        <span className="-ml-4 transition-all group-hover:ml-0">{label}</span>
+      <Link href={href} className="group flex items-center gap-2.5 text-white/60 transition-colors hover:text-white">
+        <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[6px] bg-white/10 text-white/50 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-[#f3c9a4] group-hover:to-[#a47148] group-hover:text-white">
+          <ArrowUpRight size={11} />
+        </span>
+        <span>{label}</span>
       </Link>
     </li>
   );

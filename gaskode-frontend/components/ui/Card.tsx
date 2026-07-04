@@ -7,6 +7,8 @@ type CardProps = {
   /** Renders a faint numbered badge in the top-right corner, e.g. "01". */
   index?: number;
   tone?: "light" | "dark";
+  /** Adds the four gallery-bracket corner marks for flagship cards. */
+  frame?: boolean;
   className?: string;
 };
 
@@ -15,13 +17,13 @@ type CardProps = {
  * that shifts toward the brand color as it rises — the base unit reused by
  * services, benefits, pricing, articles, and testimonial grids.
  */
-export function Card({ children, href, index, tone = "light", className = "" }: CardProps) {
+export function Card({ children, href, index, tone = "light", frame = false, className = "" }: CardProps) {
   const toneCls =
     tone === "dark"
       ? "border-white/15 bg-white/[0.04] hover:border-white/25 hover:shadow-[0_28px_55px_-24px_rgba(0,0,0,0.5)]"
       : "border-[#a47148]/15 bg-white hover:border-[#a47148]/35 hover:shadow-[0_28px_55px_-24px_rgba(43,28,17,0.35)]";
 
-  const base = `card-sheen tap group relative overflow-hidden rounded-[1.5rem] border p-6 transition-all duration-500 hover:-translate-y-1.5 sm:rounded-[1.75rem] sm:p-8 ${toneCls} ${className}`;
+  const base = `card-sheen corner-frame tap group relative overflow-hidden rounded-[1.5rem] border p-6 transition-all duration-500 hover:-translate-y-1.5 sm:rounded-[1.75rem] sm:p-8 ${toneCls} ${className}`;
 
   const badge = typeof index === "number" && (
     <span
@@ -33,12 +35,28 @@ export function Card({ children, href, index, tone = "light", className = "" }: 
     </span>
   );
 
+  const frameMarks = frame && (
+    <>
+      <span
+        aria-hidden
+        data-pos="tl"
+        className={`corner-frame-mark opacity-0 transition-opacity duration-500 group-hover:opacity-100 ${tone === "dark" ? "text-[#f3c9a4]/70" : "text-[#a47148]/70"}`}
+      />
+      <span
+        aria-hidden
+        data-pos="br"
+        className={`corner-frame-mark opacity-0 transition-opacity duration-500 group-hover:opacity-100 ${tone === "dark" ? "text-[#f3c9a4]/70" : "text-[#a47148]/70"}`}
+      />
+    </>
+  );
+
   if (href) {
     const isExternal = /^https?:\/\//.test(href);
     if (isExternal) {
       return (
         <a href={href} className={base}>
           {badge}
+          {frameMarks}
           {children}
         </a>
       );
@@ -46,6 +64,7 @@ export function Card({ children, href, index, tone = "light", className = "" }: 
     return (
       <Link href={href} className={base}>
         {badge}
+        {frameMarks}
         {children}
       </Link>
     );
@@ -54,6 +73,7 @@ export function Card({ children, href, index, tone = "light", className = "" }: 
   return (
     <div className={base}>
       {badge}
+      {frameMarks}
       {children}
     </div>
   );
