@@ -2,11 +2,14 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight2, Category2, Code, CloseCircle, Mobile, MonitorMobbile, Profile2User, Ranking, ShieldTick } from 'iconsax-react';
 import { ease } from '@/lib/design-tokens';
+import { Button } from '@/components/ui/Button';
 
 export const Navbar = () => {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [showMega, setShowMega] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -55,15 +58,15 @@ export const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 left-0 z-50 w-full border-b transition-all duration-500 ${
-        scrolled
-          ? 'border-brand/15 bg-background/85 py-2 shadow-[0_16px_40px_rgba(31,20,14,0.1)] backdrop-blur-2xl'
-          : 'border-transparent bg-background/60 py-3 backdrop-blur-md'
-      } px-5`}
+      className={`sticky top-0 left-0 z-50 w-full transition-all duration-500 ${
+        scrolled ? 'py-3' : 'py-4'
+      } px-4 sm:px-5`}
     >
       <div
-        className={`mx-auto flex max-w-7xl items-center justify-between rounded-2xl border bg-white/75 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-500 md:px-5 ${
-          scrolled ? 'border-[#ece0d0] px-4 py-1.5' : 'border-[#ece0d0]/70 px-4 py-2'
+        className={`mx-auto flex max-w-7xl items-center justify-between rounded-2xl border bg-white/75 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-2xl transition-all duration-500 md:px-5 ${
+          scrolled
+            ? 'border-[#ece0d0] px-4 py-1.5 shadow-[0_20px_50px_-24px_rgba(43,28,17,0.35),inset_0_1px_0_rgba(255,255,255,0.7)]'
+            : 'border-[#ece0d0]/70 px-4 py-2.5 shadow-[0_12px_30px_-20px_rgba(43,28,17,0.2),inset_0_1px_0_rgba(255,255,255,0.7)]'
         }`}
       >
         {/* LOGO */}
@@ -86,11 +89,17 @@ export const Navbar = () => {
           >
             <button
               type="button"
-              className="group flex items-center gap-1 py-3 text-sm font-semibold text-slate-700 transition-colors hover:text-brand"
+              className={`group flex items-center gap-1 py-3 text-sm font-semibold transition-colors hover:text-brand ${
+                pathname.startsWith('/service') ? 'text-brand' : 'text-slate-700'
+              }`}
             >
               Services
               <ArrowRight2 size={14} className={`rotate-90 transition-transform ${showMega ? 'translate-x-0.5' : ''}`} />
-              <span className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-brand transition-transform duration-300 group-hover:scale-x-100" />
+              <span
+                className={`absolute inset-x-0 -bottom-0.5 h-px origin-left bg-brand transition-transform duration-300 group-hover:scale-x-100 ${
+                  pathname.startsWith('/service') ? 'scale-x-100' : 'scale-x-0'
+                }`}
+              />
             </button>
             <AnimatePresence>
               {showMega && (
@@ -156,29 +165,32 @@ export const Navbar = () => {
               )}
             </AnimatePresence>
           </div>
-          {menuItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.path}
-              className="group relative py-3 text-sm font-semibold text-slate-600 transition-colors hover:text-brand"
-            >
-              {item.name}
-              <span className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-brand transition-transform duration-300 group-hover:scale-x-100" />
-            </Link>
-          ))}
+          {menuItems.map((item) => {
+            const isActive = item.path === '/' ? pathname === '/' : pathname.startsWith(item.path);
+            return (
+              <Link
+                key={item.name}
+                href={item.path}
+                className={`group relative py-3 text-sm font-semibold transition-colors hover:text-brand ${
+                  isActive ? 'text-brand' : 'text-slate-600'
+                }`}
+              >
+                {item.name}
+                <span
+                  className={`absolute inset-x-0 -bottom-0.5 h-px origin-left bg-brand transition-transform duration-300 group-hover:scale-x-100 ${
+                    isActive ? 'scale-x-100' : 'scale-x-0'
+                  }`}
+                />
+              </Link>
+            );
+          })}
         </div>
 
         {/* CTA BUTTON */}
         <div className="hidden md:block">
-          <Link
-            href="/contact"
-            className="group flex items-center gap-2 rounded-full bg-brand px-6 py-2.5 text-white shadow-[0_12px_30px_rgba(164,113,72,0.3)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-dark"
-          >
-            <span className="text-sm font-semibold">Konsultasi Gratis</span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-            </svg>
-          </Link>
+          <Button href="/contact" full={false} size="sm">
+            Konsultasi Gratis
+          </Button>
         </div>
 
         {/* HAMBURGER BUTTON */}
@@ -242,16 +254,21 @@ export const Navbar = () => {
                 </div>
 
                 <div className="mb-6 flex flex-col gap-1">
-                  {menuItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.path}
-                      onClick={() => setIsOpen(false)}
-                      className="rounded-xl px-3 py-3 text-lg font-semibold text-[#171310] transition hover:bg-white hover:text-brand"
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
+                  {menuItems.map((item) => {
+                    const isActive = item.path === '/' ? pathname === '/' : pathname.startsWith(item.path);
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.path}
+                        onClick={() => setIsOpen(false)}
+                        className={`rounded-xl px-3 py-3 text-lg font-semibold transition hover:bg-white hover:text-brand ${
+                          isActive ? 'bg-white text-brand' : 'text-[#171310]'
+                        }`}
+                      >
+                        {item.name}
+                      </Link>
+                    );
+                  })}
                 </div>
 
                 <Link

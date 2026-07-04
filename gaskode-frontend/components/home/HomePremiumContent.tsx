@@ -23,6 +23,7 @@ import { Section } from "@/components/ui/Section";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import { TiltCard } from "@/components/ui/TiltCard";
 import { OverlapCTA } from "@/components/ui/OverlapCTA";
+import { useSpotlight } from "@/components/ui/Spotlight";
 import { ease, ghostNumeral, heroH1, revealItem, revealLine, revealStagger, sectionH2 } from "@/lib/design-tokens";
 
 type HomePremiumContentProps = {
@@ -156,10 +157,19 @@ export function HomePremiumContent({
   const heroImageY = useTransform(heroProgress, [0, 1], ["0%", "14%"]);
   const heroContentY = useTransform(heroProgress, [0, 1], ["0%", "-10%"]);
 
+  // Cursor-tracked spotlight glow, shared across every hand-rolled tile/card on this page.
+  const onSpotlightMove = useSpotlight();
+
+  const statIcons = [TrendUp, ShieldTick, Star1];
+
   return (
     <>
       {/* ─────────────────────── HERO ─────────────────────── */}
-      <section ref={heroRef} className="grain relative isolate overflow-hidden bg-[#100d0a]">
+      <section
+        ref={heroRef}
+        onPointerMove={onSpotlightMove}
+        className="grain relative isolate overflow-hidden bg-[#100d0a]"
+      >
         {/* Base image */}
         <motion.div className="absolute inset-0 -z-20 overflow-hidden opacity-45" style={{ y: heroImageY }}>
           {heroImage && (
@@ -168,9 +178,23 @@ export function HomePremiumContent({
         </motion.div>
         {/* Cinematic wash */}
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(120%_120%_at_15%_0%,rgba(164,113,72,0.28)_0%,rgba(16,13,10,0)_45%),linear-gradient(115deg,rgba(12,10,8,0.98)_0%,rgba(12,10,8,0.86)_46%,rgba(12,10,8,0.5)_100%)]" />
+        {/* Cursor-tracked ambient glow — subtle, premium interactive depth */}
+        <div aria-hidden className="spotlight-dark pointer-events-none absolute inset-0 -z-10 hidden lg:block" />
         {/* Floating champagne glow */}
         <div className="animate-float-slow pointer-events-none absolute -left-24 top-10 -z-10 h-72 w-72 rounded-full bg-[#a47148]/25 blur-[120px]" />
         <div className="animate-float-slow pointer-events-none absolute bottom-0 right-10 -z-10 h-80 w-80 rounded-full bg-[#f3c9a4]/15 blur-[130px] [animation-delay:-4s]" />
+        {/* Fine floating dust — minimal, restrained */}
+        <div className="pointer-events-none absolute inset-0 -z-10 hidden lg:block">
+          {[...Array(6)].map((_, i) => (
+            <motion.span
+              key={i}
+              className="absolute h-1 w-1 rounded-full bg-[#f3c9a4]/40"
+              style={{ left: `${12 + i * 15}%`, top: `${20 + (i % 3) * 22}%` }}
+              animate={{ y: [0, -18, 0], opacity: [0.2, 0.6, 0.2] }}
+              transition={{ duration: 6 + i, repeat: Infinity, ease: "easeInOut", delay: i * 0.7 }}
+            />
+          ))}
+        </div>
         {/* Ghost brand watermark, sitting behind the headline for depth */}
         <span aria-hidden className={`${ghostNumeral} pointer-events-none absolute -left-2 top-6 -z-10 text-white/[0.035] sm:top-2`}>
           GK
@@ -180,6 +204,10 @@ export function HomePremiumContent({
           <motion.div initial="hidden" animate="show" variants={revealStagger} style={{ y: heroContentY }}>
             <motion.p variants={revealItem} className="mb-7 sm:mb-9">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.24em] text-[#f3c9a4] backdrop-blur sm:gap-2.5 sm:px-5 sm:py-2.5 sm:text-[11px] sm:tracking-[0.28em]">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#f3c9a4] opacity-60" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#f3c9a4]" />
+                </span>
                 <Crown1 size={14} className="text-[#f3c9a4]" variant="Bulk" />
                 AI-Ready Digital Studio
               </span>
@@ -302,6 +330,16 @@ export function HomePremiumContent({
           </motion.div>
         </div>
 
+        {/* Scroll cue — subtle, premium affordance rather than a generic mouse icon */}
+        <div className="pointer-events-none absolute bottom-24 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 lg:flex">
+          <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/35">Scroll</span>
+          <motion.span
+            className="h-8 w-px bg-gradient-to-b from-white/40 to-transparent"
+            animate={{ scaleY: [0.3, 1, 0.3], opacity: [0.3, 1, 0.3] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
+
         {/* ── Trust marquee ── */}
         <div className="relative border-t border-white/10 bg-black/25 py-5 sm:py-6">
           <div className="marquee-mask overflow-hidden">
@@ -324,17 +362,25 @@ export function HomePremiumContent({
       <div className="relative z-10 mx-auto -mt-12 max-w-6xl px-5 sm:-mt-16 sm:px-6">
         <Reveal>
           <div className="glass grid grid-cols-3 divide-x divide-[#a47148]/15 overflow-hidden rounded-[1.75rem] border border-white/60 shadow-[0_36px_80px_-30px_rgba(43,28,17,0.4)] sm:rounded-[2rem]">
-            {stats.map((item) => (
-              <div key={item.label} className="group relative bg-white/95 px-2 py-7 text-center sm:px-10 sm:py-9">
-                <span className="absolute inset-x-6 top-0 h-px origin-center scale-x-0 bg-[#a47148] transition-transform duration-500 ease-out group-hover:scale-x-100 sm:inset-x-10" />
-                <p className="font-display text-3xl font-medium tracking-tight text-[#100d0a] transition-transform duration-500 group-hover:-translate-y-0.5 sm:text-5xl md:text-6xl">
-                  {item.value}
-                </p>
-                <p className="mt-1.5 text-[10px] font-semibold uppercase leading-tight tracking-[0.16em] text-slate-500 sm:mt-2 sm:text-xs sm:tracking-[0.22em]">
-                  {item.label}
-                </p>
-              </div>
-            ))}
+            {stats.map((item, idx) => {
+              const StatIcon = statIcons[idx % statIcons.length];
+              return (
+                <div key={item.label} className="group relative bg-white/95 px-2 py-6 text-center sm:px-10 sm:py-9">
+                  <span className="absolute inset-x-6 top-0 h-px origin-center scale-x-0 bg-[#a47148] transition-transform duration-500 ease-out group-hover:scale-x-100 sm:inset-x-10" />
+                  <StatIcon
+                    size={16}
+                    variant="Bold"
+                    className="mx-auto mb-2 hidden text-[#a47148]/50 transition-colors duration-300 group-hover:text-[#a47148] sm:mb-3 sm:block"
+                  />
+                  <p className="font-display text-4xl font-medium tracking-tight text-[#100d0a] transition-transform duration-500 group-hover:-translate-y-0.5 sm:text-5xl md:text-6xl">
+                    {item.value}
+                  </p>
+                  <p className="mt-1.5 text-[10px] font-semibold uppercase leading-tight tracking-[0.16em] text-slate-500 sm:mt-2 sm:text-xs sm:tracking-[0.22em]">
+                    {item.label}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </Reveal>
       </div>
@@ -371,7 +417,8 @@ export function HomePremiumContent({
               <motion.div
                 key={item.title}
                 variants={revealItem}
-                className={`${idx === 0 ? "gradient-frame" : "card-sheen"} corner-frame tap group relative overflow-hidden rounded-[1.5rem] border border-[#a47148]/15 bg-white p-6 hover:-translate-y-1.5 hover:border-[#a47148]/35 hover:shadow-[0_28px_55px_-24px_rgba(43,28,17,0.35)] sm:rounded-[1.6rem] sm:p-8 ${benefitLayout[idx % benefitLayout.length]}`}
+                onPointerMove={onSpotlightMove}
+                className={`${idx === 0 ? "gradient-frame" : "card-sheen"} corner-frame spotlight tap group relative overflow-hidden rounded-[1.5rem] border border-[#a47148]/15 bg-white p-6 hover:-translate-y-2 hover:border-[#a47148]/35 hover:shadow-[0_32px_65px_-24px_rgba(43,28,17,0.4)] sm:rounded-[1.6rem] sm:p-8 ${benefitLayout[idx % benefitLayout.length]}`}
               >
                 {idx === 0 && (
                   <>
@@ -427,7 +474,8 @@ export function HomePremiumContent({
                   key={service.id}
                   href="/service"
                   variants={revealItem}
-                  className={`corner-frame group relative flex flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-7 transition-colors duration-300 hover:bg-white/[0.06] sm:rounded-[1.75rem] sm:p-9 ${
+                  onPointerMove={onSpotlightMove}
+                  className={`corner-frame spotlight-dark group relative flex flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-7 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.06] sm:rounded-[1.75rem] sm:p-9 ${
                     idx === 0 ? "md:col-span-2 lg:col-span-2" : ""
                   } ${offsetCls}`}
                 >
@@ -435,7 +483,7 @@ export function HomePremiumContent({
                   <span aria-hidden data-pos="br" className="corner-frame-mark text-[#f3c9a4]/0 transition-colors duration-500 group-hover:text-[#f3c9a4]/60" />
 
                   <div className="mb-6 flex items-center justify-between sm:mb-7">
-                    <div className="inline-flex rounded-2xl bg-[#a47148]/15 p-3.5 text-[#f3c9a4] ring-1 ring-[#f3c9a4]/10">
+                    <div className="inline-flex rounded-2xl bg-[#a47148]/15 p-3.5 text-[#f3c9a4] ring-1 ring-[#f3c9a4]/10 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">
                       <TickCircle size={22} variant="Bulk" />
                     </div>
                     <span className="font-mono text-xs tracking-widest text-white/30">
@@ -485,7 +533,10 @@ export function HomePremiumContent({
                 variants={revealItem}
                 className={`relative ${idx % 3 === 1 ? "md:translate-y-8" : ""}`}
               >
-                <div className="tap group relative flex flex-col overflow-hidden rounded-[1.75rem] border border-[#a47148]/15 bg-white shadow-[0_20px_46px_-26px_rgba(58,36,20,0.4)] duration-500 hover:-translate-y-2 hover:shadow-[0_40px_80px_-30px_rgba(58,36,20,0.55)] sm:rounded-[2rem]">
+                <div
+                  onPointerMove={onSpotlightMove}
+                  className="spotlight tap group relative flex flex-col overflow-hidden rounded-[1.75rem] border border-[#a47148]/15 bg-white shadow-[0_20px_46px_-26px_rgba(58,36,20,0.4)] duration-500 hover:-translate-y-2 hover:shadow-[0_40px_80px_-30px_rgba(58,36,20,0.55)] sm:rounded-[2rem]"
+                >
                   {/* Full-card link for click/keyboard access; OverlapCTA below is a separate, non-nested link */}
                   <a href="/portfolio" aria-label={item.title} className="absolute inset-0 z-10" />
                   <CornerFrame className="relative bg-[#f4ece2]">
@@ -497,11 +548,19 @@ export function HomePremiumContent({
                         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                         alt={item.title}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#100d0a]/70 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#100d0a]/75 via-[#100d0a]/5 to-transparent opacity-100 transition-opacity duration-500 lg:opacity-0 lg:group-hover:opacity-100" />
                     </div>
                     <span className="absolute left-4 top-4 rounded-full bg-black/45 px-3 py-1 font-mono text-[10px] tracking-widest text-white backdrop-blur sm:left-5 sm:top-5">
                       {String(idx + 1).padStart(2, "0")}
                     </span>
+                    {/* "View case study" caption — always visible on touch devices (no reliable hover),
+                        slides in on hover only at lg+ where a real cursor is expected */}
+                    <div className="absolute inset-x-5 bottom-5 opacity-100 transition-all duration-500 lg:translate-y-4 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100">
+                      <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white">
+                        Lihat Studi Kasus
+                        <ArrowRight2 size={13} className="transition-transform duration-300 group-hover:translate-x-1" />
+                      </span>
+                    </div>
                     <OverlapCTA href="/portfolio" label={`Lihat ${item.title}`} className="z-20" />
                   </CornerFrame>
                   <div className="flex flex-1 flex-col p-6 sm:p-7">
@@ -539,7 +598,10 @@ export function HomePremiumContent({
           <div className="grid gap-8 sm:gap-10 lg:grid-cols-[1.15fr_0.85fr]">
             {/* Featured quote — oversized editorial type instead of a boxed card */}
             {featured && (
-              <div className="grain relative isolate flex flex-col justify-between overflow-hidden rounded-[1.75rem] bg-[#100d0a] p-7 text-white sm:rounded-[2rem] sm:p-9 md:p-12">
+              <div
+                onPointerMove={onSpotlightMove}
+                className="grain spotlight-dark relative isolate flex flex-col justify-between overflow-hidden rounded-[1.75rem] bg-[#100d0a] p-7 text-white sm:rounded-[2rem] sm:p-9 md:p-12"
+              >
                 <div className="pointer-events-none absolute -right-16 -top-16 -z-10 h-64 w-64 rounded-full bg-[#a47148]/25 blur-[110px]" />
                 <span aria-hidden className={`${ghostNumeral} pointer-events-none absolute -left-3 -top-10 -z-0 text-white/[0.05]`}>
                   &ldquo;
@@ -551,7 +613,7 @@ export function HomePremiumContent({
                       <Star1 key={i} size={18} variant="Bold" />
                     ))}
                   </div>
-                  <p className="mt-5 text-balance font-display text-2xl font-light leading-[1.4] text-white/90 sm:mt-6 sm:text-3xl md:text-4xl">
+                  <p className="mt-5 text-balance font-display text-2xl font-light leading-[1.4] text-white/90 sm:mt-6 sm:text-3xl md:text-[2.6rem] md:leading-[1.3]">
                     &ldquo;{featured.content}&rdquo;
                   </p>
                 </div>
@@ -575,7 +637,10 @@ export function HomePremiumContent({
                     animate={{ y: [0, -6, 0] }}
                     transition={{ duration: 5 + i, repeat: Infinity, ease: "easeInOut", delay: i * 0.6 }}
                   >
-                    <div className="tap flex h-full flex-col justify-between rounded-[1.5rem] border border-[#a47148]/15 bg-white p-6 shadow-[0_18px_40px_-26px_rgba(58,36,20,0.4)] hover:-translate-y-1 hover:border-[#a47148]/30 sm:rounded-[1.8rem] sm:p-8">
+                    <div
+                      onPointerMove={onSpotlightMove}
+                      className="spotlight tap flex h-full flex-col justify-between rounded-[1.5rem] border border-[#a47148]/15 bg-white p-6 shadow-[0_18px_40px_-26px_rgba(58,36,20,0.4)] transition-all duration-300 hover:-translate-y-1 hover:border-[#a47148]/30 sm:rounded-[1.8rem] sm:p-8"
+                    >
                       <div>
                         <div className="flex gap-1 text-[#a47148]">
                           {[...Array(testi.rating)].map((_, s) => (
@@ -601,7 +666,10 @@ export function HomePremiumContent({
 
       {/* ─────────────────────── CLOSING CTA ─────────────────────── */}
       <Section tone="cream" prevTone="stone" rhythm="cinematic" className="px-5 sm:px-6">
-        <Reveal className="grain relative isolate mx-auto max-w-6xl overflow-hidden rounded-[1.9rem] bg-[#100d0a] px-6 py-14 text-white shadow-[0_50px_100px_-40px_rgba(18,13,9,0.8)] sm:rounded-[2.6rem] sm:px-8 sm:py-20 md:px-16 md:py-24">
+        <Reveal
+          onPointerMove={onSpotlightMove}
+          className="gradient-frame grain spotlight-dark group relative isolate mx-auto max-w-6xl overflow-hidden rounded-[1.9rem] bg-[#100d0a] px-6 py-14 text-white shadow-[0_50px_100px_-40px_rgba(18,13,9,0.8)] sm:rounded-[2.6rem] sm:px-8 sm:py-20 md:px-16 md:py-24"
+        >
           <div className="pointer-events-none absolute -left-20 -top-20 -z-10 h-80 w-80 rounded-full bg-[#a47148]/25 blur-[120px]" />
           <div className="pointer-events-none absolute -bottom-24 right-0 -z-10 h-80 w-80 rounded-full bg-[#f3c9a4]/12 blur-[130px]" />
           <span aria-hidden className="pointer-events-none absolute -right-8 bottom-0 select-none text-[10rem] leading-none text-white/[0.04] sm:text-[14rem]">
@@ -609,7 +677,7 @@ export function HomePremiumContent({
           </span>
           <div className="relative max-w-2xl">
             <SectionKicker tone="light">Let&apos;s Build Together</SectionKicker>
-            <h2 className={`mt-5 sm:mt-6 ${sectionH2} text-white`}>
+            <h2 className="mt-5 text-balance font-display text-[2.7rem] font-light leading-[1.0] tracking-[-0.03em] text-white sm:mt-6 sm:text-6xl md:text-[5.2rem]">
               {closing?.pernyataan || "Siap Memulai Proyek Anda?"}
             </h2>
             <p className="mt-5 max-w-xl text-pretty text-base leading-7 text-white/65 sm:mt-6 sm:text-lg sm:leading-8">

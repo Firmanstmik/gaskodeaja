@@ -7,12 +7,15 @@ import { Magnetic } from "@/components/ui/Magnetic";
 
 type ButtonVariant = "primary" | "ghost" | "wipe";
 type ButtonTone = "bronze" | "cream" | "dark" | "light";
+type ButtonSize = "sm" | "md";
 
 type ButtonProps = {
   href: string;
   children: ReactNode;
   variant?: ButtonVariant;
   tone?: ButtonTone;
+  /** "sm" for compact contexts like the navbar CTA; defaults to the standard size everywhere else. */
+  size?: ButtonSize;
   icon?: ReactNode;
   className?: string;
   full?: boolean;
@@ -28,6 +31,7 @@ export function Button({
   children,
   variant = "primary",
   tone,
+  size = "md",
   icon,
   className = "",
   full = true,
@@ -83,11 +87,12 @@ export function Button({
     tone === "cream"
       ? "from-[#f7e6d0] to-[#e6c39d] text-[#100d0a] shadow-[0_20px_50px_-16px_rgba(243,201,164,0.6)]"
       : "from-[#c08a5c] via-[#a97650] to-[#8b5e3c] text-white shadow-[0_22px_50px_-14px_rgba(164,113,72,0.65)]";
+  const sizeCls = size === "sm" ? "min-h-[2.75rem] px-6 text-sm gap-2" : "min-h-[3.35rem] px-8 text-[15px] gap-3";
   return (
     <Magnetic className={widthCls}>
       <Tag
         {...tagProps}
-        className={`btn-shine tap group relative inline-flex min-h-[3.35rem] w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-gradient-to-b ${skin} px-8 text-[15px] font-bold tracking-wide hover:-translate-y-1 ${className}`}
+        className={`btn-shine btn-glow tap group relative inline-flex w-full items-center justify-center overflow-hidden rounded-full bg-gradient-to-b ${skin} ${sizeCls} font-bold tracking-wide transition-transform duration-300 hover:-translate-y-1 ${className}`}
       >
         <span className="relative z-10 inline-flex items-center gap-3">{children}</span>
       </Tag>

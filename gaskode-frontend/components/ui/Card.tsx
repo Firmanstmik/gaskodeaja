@@ -1,5 +1,8 @@
+"use client";
+
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { useSpotlight } from "@/components/ui/Spotlight";
 
 type CardProps = {
   children: ReactNode;
@@ -18,12 +21,14 @@ type CardProps = {
  * services, benefits, pricing, articles, and testimonial grids.
  */
 export function Card({ children, href, index, tone = "light", frame = false, className = "" }: CardProps) {
+  const onPointerMove = useSpotlight();
   const toneCls =
     tone === "dark"
-      ? "border-white/15 bg-white/[0.04] hover:border-white/25 hover:shadow-[0_28px_55px_-24px_rgba(0,0,0,0.5)]"
-      : "border-[#a47148]/15 bg-white hover:border-[#a47148]/35 hover:shadow-[0_28px_55px_-24px_rgba(43,28,17,0.35)]";
+      ? "border-white/15 bg-white/[0.04] hover:border-white/25 hover:shadow-[0_32px_65px_-24px_rgba(0,0,0,0.55)]"
+      : "border-[#a47148]/15 bg-white hover:border-[#a47148]/35 hover:shadow-[0_32px_65px_-24px_rgba(43,28,17,0.4)]";
+  const spotlightCls = tone === "dark" ? "spotlight-dark" : "spotlight";
 
-  const base = `card-sheen corner-frame tap group relative overflow-hidden rounded-[1.5rem] border p-6 transition-all duration-500 hover:-translate-y-1.5 sm:rounded-[1.75rem] sm:p-8 ${toneCls} ${className}`;
+  const base = `card-sheen corner-frame ${spotlightCls} tap group relative overflow-hidden rounded-[1.5rem] border p-6 transition-all duration-500 hover:-translate-y-2 sm:rounded-[1.75rem] sm:p-8 ${toneCls} ${className}`;
 
   const badge = typeof index === "number" && (
     <span
@@ -54,7 +59,7 @@ export function Card({ children, href, index, tone = "light", frame = false, cla
     const isExternal = /^https?:\/\//.test(href);
     if (isExternal) {
       return (
-        <a href={href} className={base}>
+        <a href={href} className={base} onPointerMove={onPointerMove}>
           {badge}
           {frameMarks}
           {children}
@@ -62,7 +67,7 @@ export function Card({ children, href, index, tone = "light", frame = false, cla
       );
     }
     return (
-      <Link href={href} className={base}>
+      <Link href={href} className={base} onPointerMove={onPointerMove}>
         {badge}
         {frameMarks}
         {children}
@@ -71,7 +76,7 @@ export function Card({ children, href, index, tone = "light", frame = false, cla
   }
 
   return (
-    <div className={base}>
+    <div className={base} onPointerMove={onPointerMove}>
       {badge}
       {frameMarks}
       {children}

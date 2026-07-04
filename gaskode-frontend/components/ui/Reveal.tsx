@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { PointerEvent, ReactNode } from "react";
 import { motion } from "framer-motion";
 import { revealItem } from "@/lib/design-tokens";
 
@@ -10,6 +10,7 @@ type RevealProps = {
   as?: "div" | "span" | "li" | "article";
   /** Extra viewport margin before the reveal fires; matches the site-wide "-80px" default. */
   margin?: string;
+  onPointerMove?: (e: PointerEvent<HTMLElement>) => void;
 };
 
 /**
@@ -17,7 +18,7 @@ type RevealProps = {
  * single source every section should use instead of hand-rolling its own
  * local motion.div variants.
  */
-export function Reveal({ children, className = "", as = "div", margin = "-80px" }: RevealProps) {
+export function Reveal({ children, className = "", as = "div", margin = "-80px", onPointerMove }: RevealProps) {
   const MotionTag = motion[as];
   return (
     <MotionTag
@@ -26,6 +27,7 @@ export function Reveal({ children, className = "", as = "div", margin = "-80px" 
       whileInView="show"
       viewport={{ once: true, margin }}
       variants={revealItem}
+      onPointerMove={onPointerMove}
     >
       {children}
     </MotionTag>
