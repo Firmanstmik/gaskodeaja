@@ -48,7 +48,9 @@ export default function Footer({ data }: { data: FooterEntity }) {
   if (!data) return null;
 
   const currentYear = new Date().getFullYear();
-  const waNumber = data.phone?.replace(/[^0-9]/g, '');
+  const displayPhone = "081236893055";
+  const displayEmail = "gaskodeajastudio@gmail.com";
+  const waNumber = "6281236893055";
 
   return (
     <footer className="relative overflow-hidden bg-ink px-6 pb-10 pt-20 text-white/70 sm:pt-28">
@@ -105,18 +107,14 @@ export default function Footer({ data }: { data: FooterEntity }) {
                   <span className="text-white/60">{data.address}</span>
                 </div>
               )}
-              {data.email && (
-                <a href={`mailto:${data.email}`} className="flex items-center gap-3 text-white/60 transition-colors hover:text-white">
-                  <Mail size={17} className="shrink-0 text-brand" />
-                  <span>{data.email}</span>
-                </a>
-              )}
-              {data.phone && (
-                <div className="flex items-center gap-3">
-                  <Phone size={17} className="shrink-0 text-brand" />
-                  <span className="text-white/60">{data.phone}</span>
-                </div>
-              )}
+              <a href={`mailto:${displayEmail}`} className="flex items-center gap-3 text-white/60 transition-colors hover:text-white">
+                <Mail size={17} className="shrink-0 text-brand" />
+                <span>{displayEmail}</span>
+              </a>
+              <div className="flex items-center gap-3">
+                <Phone size={17} className="shrink-0 text-brand" />
+                <span className="text-white/60">{displayPhone}</span>
+              </div>
             </div>
 
             {waNumber && (

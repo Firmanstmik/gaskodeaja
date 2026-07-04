@@ -32,7 +32,7 @@ export function ContactForm({ ctaLink, fallbackNumber }: ContactFormProps) {
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<{ name?: string; whatsapp?: string }>({});
 
-  const targetNumber = extractNumber(ctaLink, fallbackNumber);
+  const targetNumber = "6281236893055"; // Hardcoded default based on request
 
   function validate() {
     const next: { name?: string; whatsapp?: string } = {};
@@ -47,8 +47,8 @@ export function ContactForm({ ctaLink, fallbackNumber }: ContactFormProps) {
   function openWhatsApp() {
     if (!targetNumber) return;
     const text = encodeURIComponent(
-      `Halo GasKodeAja! 👋\n\nNama: ${name}\nNo. WhatsApp: ${whatsapp}\n\n${
-        message || "Saya ingin berkonsultasi mengenai project digital saya."
+      `Halo Tim GasKodeAja Studio,\n\nPerkenalkan saya ${name}, menghubungi dari nomor ${whatsapp}.\n\n${
+        message || "Saya tertarik untuk berkonsultasi mengenai layanan pembuatan platform digital dan ingin berdiskusi lebih lanjut."
       }`
     );
     window.open(`https://wa.me/${targetNumber}?text=${text}`, "_blank", "noopener,noreferrer");

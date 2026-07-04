@@ -174,8 +174,9 @@ export function HomePremiumContent({
         {/* Cursor-tracked ambient glow — subtle, premium interactive depth */}
         <div aria-hidden className="spotlight-dark pointer-events-none absolute inset-0 -z-10 hidden lg:block" />
         {/* Floating champagne glow */}
-        <div className="animate-float-slow pointer-events-none absolute -left-24 top-10 -z-10 h-72 w-72 rounded-full bg-[#a47148]/25 blur-[120px]" />
-        <div className="animate-float-slow pointer-events-none absolute bottom-0 right-10 -z-10 h-80 w-80 rounded-full bg-[#f3c9a4]/15 blur-[130px] [animation-delay:-4s]" />
+        <div className="animate-glow-pulse pointer-events-none absolute -left-24 top-10 -z-10 h-72 w-72 rounded-full bg-[#a47148]/30 blur-[120px]" />
+        <div className="animate-float-dynamic pointer-events-none absolute bottom-0 right-10 -z-10 h-80 w-80 rounded-full bg-[#f3c9a4]/20 blur-[130px]" />
+        <div className="animate-float-slow pointer-events-none absolute top-1/2 left-1/2 -z-10 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#d9a875]/15 blur-[160px]" />
         {/* Fine floating dust — minimal, restrained */}
         <div className="pointer-events-none absolute inset-0 -z-10 hidden lg:block">
           {[...Array(6)].map((_, i) => (
@@ -196,12 +197,12 @@ export function HomePremiumContent({
         <div className="mx-auto grid min-h-[calc(100svh-84px)] max-w-7xl items-center gap-12 px-5 pb-16 pt-16 sm:px-6 sm:pb-24 sm:pt-20 lg:min-h-[calc(100vh-84px)] lg:grid-cols-[1.08fr_0.92fr] lg:gap-14 lg:pb-28 lg:pt-24">
           <motion.div initial="hidden" animate="show" variants={revealStagger} style={{ y: heroContentY }}>
             <motion.p variants={revealItem} className="mb-7 sm:mb-9">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.24em] text-[#f3c9a4] backdrop-blur sm:gap-2.5 sm:px-5 sm:py-2.5 sm:text-[11px] sm:tracking-[0.28em]">
+              <span className="btn-shine relative overflow-hidden inline-flex items-center gap-2 rounded-full border border-[#f3c9a4]/30 bg-white/[0.04] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.24em] text-[#f3c9a4] backdrop-blur sm:gap-2.5 sm:px-5 sm:py-2.5 sm:text-[11px] sm:tracking-[0.28em] shadow-[0_0_20px_rgba(243,201,164,0.15)] transition-all duration-300 hover:bg-white/[0.08] hover:border-[#f3c9a4]/60 hover:scale-105">
                 <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#f3c9a4] opacity-60" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#f3c9a4] opacity-80" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-[#f3c9a4]" />
                 </span>
-                <Crown1 size={14} className="text-[#f3c9a4]" variant="Bulk" />
+                <Crown1 size={14} className="text-[#f3c9a4] animate-pulse" variant="Bulk" />
                 AI-Ready Digital Studio
               </span>
             </motion.p>
@@ -294,12 +295,12 @@ export function HomePremiumContent({
             transition={{ duration: 0.9, ease, delay: 0.2 }}
             className="relative hidden lg:block"
           >
-            <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[2.8rem] bg-gradient-to-br from-white/10 to-transparent blur-2xl" />
+            <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[2.8rem] bg-gradient-to-br from-[#a47148]/20 to-transparent blur-3xl animate-glow-pulse" />
             <TiltCard>
-              <CornerFrame tone="dark" className="card-sheen rounded-[2.4rem] border border-white/15 bg-white/[0.06] p-3 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.8)] backdrop-blur-xl">
+              <CornerFrame tone="dark" className="group card-sheen rounded-[2.4rem] border border-white/20 bg-white/[0.08] p-3 shadow-[0_40px_100px_-20px_rgba(164,113,72,0.3)] backdrop-blur-2xl transition-all duration-500 hover:border-[#f3c9a4]/50">
                 {heroImage ? (
                   <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.9rem]">
-                    <Image src={heroImage} alt={heroTitle} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
+                    <Image src={heroImage} alt={heroTitle} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover transition-transform duration-[8s] ease-out group-hover:scale-110" />
                   </div>
                 ) : (
                   <div className="aspect-[4/3] w-full rounded-[1.9rem] bg-white/10" />
@@ -410,15 +411,15 @@ export function HomePremiumContent({
                 key={item.title}
                 variants={revealItem}
                 onPointerMove={onSpotlightMove}
-                className={`${idx === 0 ? "gradient-frame" : "card-sheen"} spotlight tap group relative flex h-full flex-col overflow-hidden rounded-[1.6rem] border border-[#a47148]/15 bg-white p-6 transition-all duration-500 hover:-translate-y-2 hover:border-[#a47148]/35 hover:shadow-[0_32px_65px_-24px_rgba(43,28,17,0.4)] sm:rounded-[1.75rem] sm:p-8`}
+                className={`${idx === 0 ? "gradient-frame" : "card-sheen"} spotlight tap group relative flex h-full flex-col overflow-hidden rounded-[1.6rem] border border-[#a47148]/15 bg-white p-6 transition-all duration-500 hover:-translate-y-3 hover:scale-[1.02] hover:border-[#a47148]/50 hover:shadow-[0_40px_80px_-20px_rgba(164,113,72,0.25)] sm:rounded-[1.75rem] sm:p-8`}
               >
                 {/* Wash that intensifies on hover — keeps the grid feeling tidy while still rich */}
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#fff8ee] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
                 <div className="relative mb-5 flex items-center gap-4 sm:mb-6">
-                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#fff5eb] to-[#f3ddc0] ring-1 ring-[#a47148]/10 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3">
-                    {item.icon}
-                    <span className="absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#100d0a] font-mono text-[10px] font-bold text-[#f3c9a4] shadow-[0_4px_10px_-2px_rgba(0,0,0,0.4)]">
+                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#fff5eb] to-[#f3ddc0] ring-1 ring-[#a47148]/20 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 group-hover:shadow-[0_0_25px_rgba(164,113,72,0.4)]">
+                    <span className="transition-transform duration-500 group-hover:scale-125">{item.icon}</span>
+                    <span className="absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#100d0a] font-mono text-[10px] font-bold text-[#f3c9a4] shadow-[0_4px_10px_-2px_rgba(0,0,0,0.4)] transition-colors duration-300 group-hover:bg-[#a47148] group-hover:text-white">
                       {String(idx + 1).padStart(2, "0")}
                     </span>
                   </div>
@@ -467,16 +468,18 @@ export function HomePremiumContent({
                   href="/service"
                   variants={revealItem}
                   onPointerMove={onSpotlightMove}
-                  className={`corner-frame spotlight-dark group relative flex flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-7 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.06] sm:rounded-[1.75rem] sm:p-9 ${
-                    idx === 0 ? "md:col-span-2 lg:col-span-2" : ""
+                  className={`corner-frame spotlight-dark group relative flex flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-7 transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02] hover:bg-white/[0.08] hover:border-[#f3c9a4]/40 hover:shadow-[0_0_40px_rgba(243,201,164,0.1)] sm:rounded-[1.75rem] sm:p-9 ${
+                    idx === 0 ? "md:col-span-2 lg:col-span-2 gradient-frame" : ""
                   } ${offsetCls}`}
                 >
-                  <span aria-hidden data-pos="tl" className="corner-frame-mark text-[#f3c9a4]/0 transition-colors duration-500 group-hover:text-[#f3c9a4]/60" />
-                  <span aria-hidden data-pos="br" className="corner-frame-mark text-[#f3c9a4]/0 transition-colors duration-500 group-hover:text-[#f3c9a4]/60" />
+                  <span aria-hidden data-pos="tl" className="corner-frame-mark text-[#f3c9a4]/0 transition-all duration-500 group-hover:text-[#f3c9a4]/100 group-hover:scale-125" />
+                  <span aria-hidden data-pos="br" className="corner-frame-mark text-[#f3c9a4]/0 transition-all duration-500 group-hover:text-[#f3c9a4]/100 group-hover:scale-125" />
+                  <span aria-hidden data-pos="tr" className="corner-frame-mark text-[#f3c9a4]/0 transition-all duration-500 group-hover:text-[#f3c9a4]/100 group-hover:scale-125" />
+                  <span aria-hidden data-pos="bl" className="corner-frame-mark text-[#f3c9a4]/0 transition-all duration-500 group-hover:text-[#f3c9a4]/100 group-hover:scale-125" />
 
                   <div className="mb-6 flex items-center justify-between sm:mb-7">
-                    <div className="inline-flex rounded-2xl bg-[#a47148]/15 p-3.5 text-[#f3c9a4] ring-1 ring-[#f3c9a4]/10 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">
-                      <TickCircle size={22} variant="Bulk" />
+                    <div className="inline-flex rounded-2xl bg-[#a47148]/15 p-3.5 text-[#f3c9a4] ring-1 ring-[#f3c9a4]/10 transition-all duration-500 group-hover:scale-110 group-hover:rotate-[15deg] group-hover:bg-[#a47148]/30 group-hover:ring-[#f3c9a4]/40">
+                      <span className="transition-transform duration-300 group-hover:scale-110"><TickCircle size={22} variant="Bulk" /></span>
                     </div>
                     <span className="font-mono text-xs tracking-widest text-white/30">
                       {String(idx + 1).padStart(2, "0")}
@@ -537,21 +540,24 @@ export function HomePremiumContent({
                         src={`${uri}/${item.image_thumbnail}`}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                        className="object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
                         alt={item.title}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#100d0a]/75 via-[#100d0a]/5 to-transparent opacity-100 transition-opacity duration-500 lg:opacity-0 lg:group-hover:opacity-100" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#100d0a]/90 via-[#100d0a]/20 to-transparent opacity-100 transition-opacity duration-700 lg:opacity-0 lg:group-hover:opacity-100" />
+                      <div className="absolute inset-0 backdrop-blur-[2px] opacity-0 transition-opacity duration-700 lg:group-hover:opacity-100" />
                     </div>
-                    <span className="absolute left-4 top-4 rounded-full bg-black/45 px-3 py-1 font-mono text-[10px] tracking-widest text-white backdrop-blur sm:left-5 sm:top-5">
+                    <span className="absolute left-4 top-4 rounded-full bg-black/60 px-3 py-1 font-mono text-[10px] tracking-widest text-white backdrop-blur-md shadow-lg sm:left-5 sm:top-5 transition-transform duration-500 group-hover:scale-110">
                       {String(idx + 1).padStart(2, "0")}
                     </span>
                     {/* "View case study" caption — always visible on touch devices (no reliable hover),
                         slides in on hover only at lg+ where a real cursor is expected */}
-                    <div className="absolute inset-x-5 bottom-5 opacity-100 transition-all duration-500 lg:translate-y-4 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100">
+                    <div className="absolute inset-x-5 bottom-5 opacity-100 transition-all duration-500 lg:translate-y-8 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100 flex items-center justify-between rounded-2xl bg-white/10 p-4 backdrop-blur-md border border-white/20">
                       <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white">
                         Lihat Studi Kasus
-                        <ArrowRight2 size={13} className="transition-transform duration-300 group-hover:translate-x-1" />
                       </span>
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black transition-transform duration-500 group-hover:-rotate-45">
+                        <ArrowRight2 size={16} />
+                      </div>
                     </div>
                     <OverlapCTA href="/portfolio" label={`Lihat ${item.title}`} className="z-20" />
                   </CornerFrame>
