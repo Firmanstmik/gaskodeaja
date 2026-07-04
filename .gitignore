@@ -36,6 +36,9 @@ Thumbs.db
 # Root screenshots (not part of app)
 /[0-9]*.png
 
+# Design-reference project (inspiration only, not part of the product)
+/remix-of-workspace-vision/
+
 # Uploads (keep structure, ignore files)
 GasKodeWeb/public/uploads/**/*
 !GasKodeWeb/public/uploads/.gitkeep

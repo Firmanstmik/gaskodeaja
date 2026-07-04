@@ -4,28 +4,12 @@ import { useState } from "react";
 import { MessageQuestion, TickCircle, Warning2, Whatsapp } from "iconsax-react";
 import { Magnetic } from "@/components/ui/Magnetic";
 
-type ContactFormProps = {
-  /** CTA / WhatsApp link coming from the CMS (e.g. https://wa.me/62812xxxx) */
-  ctaLink?: string;
-  /** Fallback phone number (digits) if ctaLink has none */
-  fallbackNumber?: string;
-};
-
 type Status = "idle" | "submitting" | "success" | "error";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8006/api";
 
-function extractNumber(...sources: (string | undefined)[]) {
-  for (const src of sources) {
-    if (!src) continue;
-    const digits = src.replace(/[^0-9]/g, "");
-    if (digits.length >= 8) return digits;
-  }
-  return "";
-}
-
-export function ContactForm({ ctaLink, fallbackNumber }: ContactFormProps) {
+export function ContactForm() {
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [message, setMessage] = useState("");

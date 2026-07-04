@@ -28,9 +28,6 @@ type ContactPremiumContentProps = {
 
 export function ContactPremiumContent({ data, uri }: ContactPremiumContentProps) {
   const heroImage = `${uri}/${data.hero.imagePath}`;
-  const phoneFromContacts = data.contacts
-    .map((c) => c.value.replace(/[^0-9]/g, ""))
-    .find((digits) => digits.length >= 10);
 
   return (
     <main className="bg-ink text-white">
@@ -119,7 +116,7 @@ export function ContactPremiumContent({ data, uri }: ContactPremiumContentProps)
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.7, ease }}
           >
-            <ContactForm ctaLink={data.hero.ctaLink} fallbackNumber={phoneFromContacts} />
+            <ContactForm />
           </motion.div>
         </div>
       </Section>
