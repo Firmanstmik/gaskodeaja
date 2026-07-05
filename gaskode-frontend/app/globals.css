@@ -310,24 +310,21 @@
   );
 }
 
-/* Ambient glow halo behind primary buttons, blooms in on hover */
+/* Ambient glow halo behind primary buttons, blooms in on hover.
+   Uses box-shadow rather than an absolutely-positioned ::after: these
+   buttons need `overflow: hidden` for their own shine/wipe effects, and
+   that same overflow rule would clip a ::after halo before it could ever
+   bloom outward past the button's edge. box-shadow isn't affected by an
+   element's own overflow, so it blooms correctly. */
 .btn-glow {
-  position: relative;
+  box-shadow: 0 0 0 0 rgba(164, 113, 72, 0);
+  transition: box-shadow 0.5s ease;
 }
-.btn-glow::after {
-  content: "";
-  position: absolute;
-  inset: -10px;
-  z-index: -1;
-  border-radius: inherit;
-  background: radial-gradient(circle, rgba(164, 113, 72, 0.55), transparent 70%);
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  filter: blur(14px);
-}
-.group:hover > .btn-glow::after,
-.btn-glow:hover::after {
-  opacity: 1;
+.group:hover .btn-glow,
+.btn-glow:hover {
+  box-shadow:
+    0 0 35px 6px rgba(164, 113, 72, 0.45),
+    0 0 70px 16px rgba(164, 113, 72, 0.2);
 }
 
 /* ── Shared premium primitives (design-system layer) ─────── */
