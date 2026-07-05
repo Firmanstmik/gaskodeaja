@@ -8,6 +8,7 @@ import {
   CalendarTick,
   Crown1,
   Global,
+  MedalStar,
   Mobile,
   MonitorMobbile,
   SearchNormal1,
@@ -37,47 +38,27 @@ function ServiceIcon({ title }: { title: string }) {
   return <Setting4 size={20} variant="Bulk" />;
 }
 
-/** Shared pricing-card content — kept as one component so the dramatically-elevated
- *  featured plan and the regular plans don't duplicate the feature-list markup. */
-function PlanContent({ plan }: { plan: ServicePlan }) {
+/** Shared feature-checklist treatment for pricing cards — an enlarged,
+ *  softly-shadowed tick-circle instead of a plain bullet. `emphasis` scales
+ *  icon/type size up for the featured hero card vs. the compact comparison cards. */
+function FeatureList({ features, emphasis = false }: { features: ServicePlan["features"]; emphasis?: boolean }) {
   return (
-    <>
-      {plan.isFeatured && (
-        <span className="btn-shine relative overflow-hidden mb-4 inline-flex items-center gap-1.5 rounded-full border border-[#a47148]/30 bg-gradient-to-r from-[#fff3e6] to-[#f3ddc0] px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#a47148] shadow-[0_0_15px_rgba(164,113,72,0.15)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(164,113,72,0.3)]">
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#a47148] opacity-80" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#a47148]" />
-          </span>
-          Rekomendasi
-        </span>
-      )}
-      <h3 className="font-display text-2xl font-medium text-[#100d0a]">{plan.name}</h3>
-      <p className="mt-2 font-display text-3xl font-medium text-[#a47148] sm:text-4xl">
-        Rp {plan.price}
-      </p>
-      <ul className="mt-6 space-y-3">
-        {plan.features.map((f) => (
-          <li key={f} className="flex items-start gap-2.5 text-sm leading-7 text-slate-600">
-            <TickCircle size={16} variant="Bulk" className="mt-1 shrink-0 text-[#a47148]" />
+    <ul className={emphasis ? "space-y-4" : "space-y-2.5"}>
+      {features.map((f) => (
+        <li key={f} className="flex items-start gap-3">
+          <TickCircle
+            size={emphasis ? 20 : 17}
+            variant="Bold"
+            className={`mt-0.5 shrink-0 ${
+              emphasis ? "text-[#a47148] drop-shadow-[0_2px_6px_rgba(164,113,72,0.35)]" : "text-[#a47148]/70"
+            }`}
+          />
+          <span className={emphasis ? "text-[15px] leading-7 text-slate-600" : "text-sm leading-6 text-slate-600"}>
             {f}
-          </li>
-        ))}
-      </ul>
-      <div className="mt-6 rounded-xl bg-background p-4">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Maintenance</p>
-        <p className="mt-1 text-lg font-bold text-slate-700">Rp {plan.maintenance}</p>
-      </div>
-      <div className="mt-6">
-        <Button
-          href={waLink(`Halo GasKodeAja, saya tertarik dengan paket ${plan.name} (Rp ${plan.price}). Bisa dijelaskan lebih lanjut?`)}
-          variant={plan.isFeatured ? "primary" : "wipe"}
-          full="always"
-        >
-          Pilih Paket Ini
-          <Whatsapp size={18} variant="Bulk" />
-        </Button>
-      </div>
-    </>
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -90,6 +71,12 @@ export function ServicePremiumContent({ data, uri }: ServicePremiumContentProps)
   const heroImage = `${uri}/${data.hero.imagePath}`;
   const ctaLink = waLink("Halo GasKodeAja, saya ingin konsultasi mengenai layanan dan paket harga.");
   const onSpotlightMove = useSpotlight();
+
+  // Pricing: the recommended plan becomes an elevated hero card, the rest a
+  // compact comparison rail — a real visual hierarchy instead of N identical cards.
+  const featuredPlan = data.plans.find((p) => p.isFeatured) ?? data.plans[0];
+  const otherPlans = data.plans.filter((p) => p.id !== featuredPlan?.id);
+  const hasComparison = otherPlans.length > 0;
 
   // Middle "why choose us" opening statement raised — breaks the flat symmetric rhythm.
   const openingLayout = ["", "md:-translate-y-6 md:py-10", ""];
@@ -357,35 +344,129 @@ export function ServicePremiumContent({ data, uri }: ServicePremiumContentProps)
         </Reveal>
       </Section>
 
-      {/* ─────────────────────── PRICING — featured plan dramatically elevated ─────────────────────── */}
-      <Section tone="cream" prevTone="ink" className="px-5 sm:px-6">
+      {/* ─────────────────────── PRICING — editorial hero card + comparison rail ─────────────────────── */}
+      <Section tone="cream" prevTone="ink" className="grain relative isolate overflow-hidden px-5 sm:px-6">
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[34rem] bg-[radial-gradient(75%_60%_at_50%_0%,rgba(164,113,72,0.1),transparent_70%)]" />
+        <span aria-hidden className={`${ghostNumeral} pointer-events-none absolute -left-6 bottom-6 -z-10 hidden select-none text-[#a47148]/[0.045] lg:block`}>
+          Rp
+        </span>
+
         <Reveal className="mx-auto max-w-7xl">
           <SectionHeading kicker="Investment" center>
             Paket Harga
           </SectionHeading>
-          <p className="mt-5 text-center text-[15px] leading-7 text-slate-600 sm:text-base">Pilih paket terbaik untuk scale bisnis Anda</p>
+          <p className="mx-auto mt-5 max-w-md text-center text-[15px] leading-7 text-slate-600 sm:text-base">
+            Pilih paket terbaik untuk scale bisnis Anda
+          </p>
 
-          <motion.div variants={revealStagger} className="mt-10 grid gap-6 sm:mt-16 md:grid-cols-3 md:items-center">
-            {data.plans.map((plan) => (
-              <motion.div
-                key={plan.id}
-                variants={revealItem}
-                className={`relative ${plan.isFeatured ? "z-10 md:-translate-y-8 md:scale-[1.07]" : ""}`}
-              >
-                {plan.isFeatured ? (
-                  <TiltCard range={4} className="relative z-10">
-                    <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-[#a47148]/30 to-transparent blur-3xl animate-glow-pulse" />
-                    <div onPointerMove={onSpotlightMove} className="gradient-frame corner-frame spotlight tap relative overflow-hidden rounded-[1.9rem] border border-[#a47148]/40 bg-white p-8 shadow-[0_44px_100px_-30px_rgba(164,113,72,0.45)] transition-all duration-500 hover:border-[#f3c9a4]/80 hover:shadow-[0_44px_120px_-20px_rgba(164,113,72,0.55)] sm:rounded-[2.2rem] sm:p-9">
-                      <PlanContent plan={plan} />
-                    </div>
-                  </TiltCard>
-                ) : (
-                  <div onPointerMove={onSpotlightMove} className="tap card-sheen spotlight relative overflow-hidden rounded-[1.75rem] border border-[#a47148]/15 bg-white/80 p-7 transition-all duration-500 hover:-translate-y-3 hover:scale-[1.03] hover:border-[#a47148]/40 hover:bg-white hover:shadow-[0_30px_60px_-15px_rgba(164,113,72,0.25)] sm:rounded-[2rem]">
-                    <PlanContent plan={plan} />
+          <motion.div
+            variants={revealStagger}
+            className={
+              hasComparison
+                ? "mt-14 grid gap-6 sm:mt-20 lg:grid-cols-12 lg:items-stretch lg:gap-8"
+                : "mt-14 flex justify-center sm:mt-20"
+            }
+          >
+            {/* Featured plan — the hero card, dramatically elevated */}
+            {featuredPlan && (
+              <motion.div variants={revealItem} className={`relative ${hasComparison ? "lg:col-span-7" : "w-full max-w-2xl"}`}>
+                {featuredPlan.isFeatured && (
+                  <div className="absolute -top-4 left-8 z-20 sm:left-10">
+                    <span className="btn-shine relative inline-flex items-center gap-1.5 overflow-hidden rounded-full border border-[#a47148]/30 bg-gradient-to-r from-[#fff3e6] to-[#f3ddc0] px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#8b5e3c] shadow-[0_10px_30px_-10px_rgba(164,113,72,0.5)]">
+                      <MedalStar size={13} variant="Bold" />
+                      Rekomendasi Terbaik
+                    </span>
                   </div>
                 )}
+
+                <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-[#a47148]/25 to-transparent opacity-70 blur-3xl" />
+
+                <TiltCard range={3} className="h-full">
+                  <div
+                    onPointerMove={onSpotlightMove}
+                    className="group gradient-frame corner-frame spotlight tap relative isolate flex h-full flex-col overflow-hidden rounded-[2rem] border border-[#a47148]/25 bg-gradient-to-b from-white to-[#fdf9f3] p-8 pt-11 shadow-[0_50px_110px_-30px_rgba(164,113,72,0.4)] transition-all duration-500 hover:shadow-[0_60px_130px_-24px_rgba(164,113,72,0.5)] sm:rounded-[2.4rem] sm:p-11 sm:pt-14 lg:p-12 lg:pt-16"
+                  >
+                    {/* Soft top-light reflection — the "physical premium product" sheen */}
+                    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white/80 to-transparent" />
+
+                    <h3 className="relative font-display text-[1.7rem] font-medium tracking-[-0.01em] text-[#100d0a] sm:text-3xl">
+                      {featuredPlan.name}
+                    </h3>
+                    <div className="relative mt-5 flex items-baseline gap-2">
+                      <span className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Rp</span>
+                      <span className="font-display text-[2.75rem] font-medium leading-none tracking-[-0.02em] text-[#a47148] sm:text-6xl">
+                        {featuredPlan.price}
+                      </span>
+                    </div>
+
+                    <div className="hairline relative my-8 border-t sm:my-9" />
+
+                    <FeatureList features={featuredPlan.features} emphasis />
+
+                    <div className="hairline relative my-8 border-t sm:my-9" />
+
+                    <div className="relative">
+                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Maintenance</p>
+                      <p className="mt-1 font-display text-xl font-medium text-slate-700">Rp {featuredPlan.maintenance}</p>
+                    </div>
+
+                    <div className="relative mt-8">
+                      <Button
+                        href={waLink(`Halo GasKodeAja, saya tertarik dengan paket ${featuredPlan.name} (Rp ${featuredPlan.price}). Bisa dijelaskan lebih lanjut?`)}
+                        full="always"
+                      >
+                        Pilih Paket Ini
+                        <Whatsapp size={18} variant="Bulk" />
+                      </Button>
+                    </div>
+                  </div>
+                </TiltCard>
               </motion.div>
-            ))}
+            )}
+
+            {/* Other plans — compact comparison rail, native-app-tile treatment on mobile */}
+            {hasComparison && (
+              <div className="flex flex-col gap-5 lg:col-span-5 lg:justify-center lg:gap-6">
+                {otherPlans.map((plan) => (
+                  <motion.div
+                    key={plan.id}
+                    variants={revealItem}
+                    onPointerMove={onSpotlightMove}
+                    className="tap card-sheen spotlight relative overflow-hidden rounded-[1.5rem] border border-[#a47148]/12 bg-white/70 p-6 transition-all duration-500 hover:-translate-y-1.5 hover:border-[#a47148]/35 hover:bg-white hover:shadow-[0_28px_60px_-24px_rgba(164,113,72,0.3)] sm:rounded-[1.75rem] sm:p-7"
+                  >
+                    <h4 className="font-display text-lg font-medium text-[#100d0a] sm:text-xl">{plan.name}</h4>
+                    <div className="mt-2 flex items-baseline gap-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Rp</span>
+                      <span className="font-display text-2xl font-medium tracking-[-0.01em] text-[#a47148] sm:text-[1.75rem]">
+                        {plan.price}
+                      </span>
+                    </div>
+
+                    <div className="hairline my-5 border-t" />
+
+                    <FeatureList features={plan.features} />
+
+                    <div className="hairline my-5 border-t" />
+
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Maintenance</p>
+                        <p className="mt-0.5 text-sm font-bold text-slate-600">Rp {plan.maintenance}</p>
+                      </div>
+                      <Button
+                        href={waLink(`Halo GasKodeAja, saya tertarik dengan paket ${plan.name} (Rp ${plan.price}). Bisa dijelaskan lebih lanjut?`)}
+                        variant="wipe"
+                        size="sm"
+                        full={false}
+                        icon={<Whatsapp size={15} variant="Bulk" />}
+                      >
+                        Pilih Ini
+                      </Button>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </motion.div>
         </Reveal>
       </Section>
