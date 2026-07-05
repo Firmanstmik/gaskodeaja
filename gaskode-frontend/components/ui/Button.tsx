@@ -18,7 +18,8 @@ type ButtonProps = {
   size?: ButtonSize;
   icon?: ReactNode;
   className?: string;
-  full?: boolean;
+  /** true = full width on mobile, auto beyond `sm:` (default). "always" = stay full width at every breakpoint — for narrow contexts like a pricing-card CTA. false = shrink to content. */
+  full?: boolean | "always";
   /** Optional extra click handler — useful for e.g. closing a mobile menu on tap. */
   onClick?: () => void;
 };
@@ -45,7 +46,7 @@ export function Button({
     ? { href, target: href.startsWith("http") ? "_blank" : undefined, onClick }
     : { href, onClick };
 
-  const widthCls = full ? "w-full sm:w-auto" : "";
+  const widthCls = full === "always" ? "w-full" : full ? "w-full sm:w-auto" : "";
 
   if (variant === "wipe") {
     const skin =

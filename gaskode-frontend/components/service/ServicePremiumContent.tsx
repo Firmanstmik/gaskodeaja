@@ -13,16 +13,17 @@ import {
   SearchNormal1,
   Setting4,
   TickCircle,
+  Whatsapp,
 } from "iconsax-react";
 import { ServicePageData, ServicePlan } from "@/core/domain/entities/ServicesEntity";
 import { Button } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Card } from "@/components/ui/Card";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import { TiltCard } from "@/components/ui/TiltCard";
 import { useSpotlight } from "@/components/ui/Spotlight";
 import { heroH1, revealItem, revealStagger } from "@/lib/design-tokens";
+import { waLink } from "@/lib/contact";
 
 function ServiceIcon({ title }: { title: string }) {
   if (title.toLowerCase().includes("website")) return <Global size={20} variant="Bulk" />;
@@ -60,6 +61,16 @@ function PlanContent({ plan }: { plan: ServicePlan }) {
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Maintenance</p>
         <p className="mt-1 text-lg font-bold text-slate-700">Rp {plan.maintenance}</p>
       </div>
+      <div className="mt-6">
+        <Button
+          href={waLink(`Halo GasKodeAja, saya tertarik dengan paket ${plan.name} (Rp ${plan.price}). Bisa dijelaskan lebih lanjut?`)}
+          variant={plan.isFeatured ? "primary" : "wipe"}
+          full="always"
+        >
+          Pilih Paket Ini
+          <Whatsapp size={18} variant="Bulk" />
+        </Button>
+      </div>
     </>
   );
 }
@@ -71,6 +82,7 @@ type ServicePremiumContentProps = {
 
 export function ServicePremiumContent({ data, uri }: ServicePremiumContentProps) {
   const heroImage = `${uri}/${data.hero.imagePath}`;
+  const ctaLink = waLink("Halo GasKodeAja, saya ingin konsultasi mengenai layanan dan paket harga.");
   const onSpotlightMove = useSpotlight();
 
   // Middle card raised, taller padding — breaks the flat symmetric 3-up.
@@ -106,7 +118,7 @@ export function ServicePremiumContent({ data, uri }: ServicePremiumContentProps)
             {data.hero.subtitle}
           </motion.p>
           <motion.div variants={revealItem} className="mt-9">
-            <Button href={data.hero.ctaLink} full={false}>
+            <Button href={ctaLink} full={false}>
               {data.hero.ctaText}
               <ArrowRight2 size={16} />
             </Button>
@@ -224,7 +236,7 @@ export function ServicePremiumContent({ data, uri }: ServicePremiumContentProps)
             {data.closing.jawaban[0]}
           </p>
           <div className="mt-9 flex justify-center">
-            <Button href={data.hero.ctaLink} full={false}>
+            <Button href={ctaLink} full={false}>
               Konsultasi Sekarang
               <CalendarTick size={16} />
             </Button>

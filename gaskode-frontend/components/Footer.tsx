@@ -27,6 +27,7 @@ const Facebook = ({ className }: { className?: string }) => (
 
 import { Footer as FooterEntity } from '@/core/domain/entities/Footer';
 import { Button } from '@/components/ui/Button';
+import { CONTACT_EMAIL, WHATSAPP_DISPLAY, WHATSAPP_NUMBER, waLink } from '@/lib/contact';
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -48,9 +49,8 @@ export default function Footer({ data }: { data: FooterEntity }) {
   if (!data) return null;
 
   const currentYear = new Date().getFullYear();
-  const displayPhone = "081236893055";
-  const displayEmail = "gaskodeajastudio@gmail.com";
-  const waNumber = "6281236893055";
+  const displayPhone = WHATSAPP_DISPLAY;
+  const displayEmail = CONTACT_EMAIL;
 
   return (
     <footer className="relative overflow-hidden bg-ink px-6 pb-10 pt-20 text-white/70 sm:pt-28">
@@ -117,8 +117,8 @@ export default function Footer({ data }: { data: FooterEntity }) {
               </div>
             </div>
 
-            {waNumber && (
-              <Button href={`https://wa.me/${waNumber}`} icon={<ArrowRight size={15} />} full={false}>
+            {WHATSAPP_NUMBER && (
+              <Button href={waLink("Halo GasKodeAja, saya ingin konsultasi mengenai layanan Anda.")} icon={<ArrowRight size={15} />} full={false}>
                 <MessageSquare size={17} />
                 Konsultasi via WhatsApp
               </Button>

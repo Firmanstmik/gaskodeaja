@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { MessageQuestion, TickCircle, Warning2, Whatsapp } from "iconsax-react";
 import { Magnetic } from "@/components/ui/Magnetic";
+import { WHATSAPP_NUMBER } from "@/lib/contact";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -16,7 +17,7 @@ export function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<{ name?: string; whatsapp?: string }>({});
 
-  const targetNumber = "6281236893055"; // Hardcoded default based on request
+  const targetNumber = WHATSAPP_NUMBER;
 
   function validate() {
     const next: { name?: string; whatsapp?: string } = {};

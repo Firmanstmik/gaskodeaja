@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/Card";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import { heroH1, revealItem, revealStagger, sectionH2 } from "@/lib/design-tokens";
+import { waLink } from "@/lib/contact";
 
 type BlogPremiumContentProps = {
   data: BlogPageData;
@@ -21,6 +22,7 @@ export function BlogPremiumContent({ data, uri }: BlogPremiumContentProps) {
   const heroImage = `${uri}/${data.hero.imagePath}`;
   const [featuredPost, ...restPosts] = data.posts;
   const categoryName = (id: number) => data.categories.find((c) => c.id === id)?.name || "Uncategorized";
+  const ctaLink = waLink("Halo GasKodeAja, saya ingin konsultasi setelah membaca blog Anda.");
 
   return (
     <main className="bg-background text-slate-900">
@@ -47,7 +49,7 @@ export function BlogPremiumContent({ data, uri }: BlogPremiumContentProps) {
             {data.hero.subtitle}
           </motion.p>
           <motion.div variants={revealItem} className="mt-9">
-            <Button href={data.hero.ctaLink || "/contact"} full={false}>
+            <Button href={ctaLink} full={false}>
               {data.hero.ctaText}
               <ArrowRight2 size={16} />
             </Button>
@@ -157,7 +159,7 @@ export function BlogPremiumContent({ data, uri }: BlogPremiumContentProps) {
                 <h3 className="mt-3 font-display text-2xl font-medium leading-tight">{data.closing.pernyataan}</h3>
                 <p className="mt-4 text-sm leading-7 text-white/70">{data.closing.jawaban[0]}</p>
                 <div className="mt-6">
-                  <Button href={data.hero.ctaLink || "/contact"} full={false} className="px-5 py-3 text-xs">
+                  <Button href={ctaLink} full={false} className="px-5 py-3 text-xs">
                     <MessageQuestion size={16} />
                     Konsultasi Gratis
                   </Button>

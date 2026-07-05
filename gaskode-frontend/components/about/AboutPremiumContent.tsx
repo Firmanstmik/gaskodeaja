@@ -18,6 +18,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import { ease, ghostNumeral, heroH1, revealItem, revealStagger } from "@/lib/design-tokens";
+import { waLink } from "@/lib/contact";
 
 type AboutPremiumContentProps = {
   data: About;
@@ -28,6 +29,7 @@ export function AboutPremiumContent({ data, uri }: AboutPremiumContentProps) {
   const visi = data.visiMisi?.find((i) => i.tipe === "visi");
   const misi = data.visiMisi?.find((i) => i.tipe === "misi");
   const heroImage = `${uri}/${data.hero.imagePath}`;
+  const ctaLink = waLink("Halo GasKodeAja, saya ingin tahu lebih lanjut tentang studio dan layanan Anda.");
 
   return (
     <main className="bg-background text-slate-900">
@@ -62,7 +64,7 @@ export function AboutPremiumContent({ data, uri }: AboutPremiumContentProps) {
             {data.hero.subtitle}
           </motion.p>
           <motion.div variants={revealItem} className="mt-9">
-            <Button href={data.hero.ctaLink} full={false}>{data.hero.ctaText}</Button>
+            <Button href={ctaLink} full={false}>{data.hero.ctaText}</Button>
           </motion.div>
         </motion.div>
       </section>
@@ -262,7 +264,7 @@ export function AboutPremiumContent({ data, uri }: AboutPremiumContentProps) {
             {data.closing.jawaban[0]}
           </p>
           <div className="mt-9 flex justify-center">
-            <Button href={data.hero.ctaLink} full={false}>
+            <Button href={ctaLink} full={false}>
               Konsultasi Sekarang
               <Flash size={16} />
             </Button>

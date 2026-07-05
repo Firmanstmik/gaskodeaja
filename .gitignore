@@ -30,9 +30,9 @@ database/database.sqlite
 .DS_Store
 Thumbs.db
 .idea/
-.vscode/*
-!.vscode/settings.json
+**/.vscode/*
 !**/.vscode/settings.json
+!**/.vscode/css_custom_data.json
 *.log
 
 # Root screenshots (not part of app)

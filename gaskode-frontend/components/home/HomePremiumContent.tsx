@@ -26,6 +26,7 @@ import { OverlapCTA } from "@/components/ui/OverlapCTA";
 import { useSpotlight } from "@/components/ui/Spotlight";
 import { CountUp } from "@/components/ui/CountUp";
 import { ease, ghostNumeral, heroH1, revealItem, revealLine, revealStagger, sectionH2 } from "@/lib/design-tokens";
+import { waLink } from "@/lib/contact";
 
 type HomePremiumContentProps = {
   hero: {
@@ -135,7 +136,7 @@ export function HomePremiumContent({
   const featured = testimonial[0];
   const restTestimonials = testimonial.slice(1);
 
-  const ctaLink = hero?.cta_link || "/contact";
+  const ctaLink = waLink("Halo GasKodeAja, saya ingin konsultasi mengenai layanan digital untuk bisnis saya.");
   const ctaText = hero?.cta_text || "Hubungi Kami";
 
   const stats = [

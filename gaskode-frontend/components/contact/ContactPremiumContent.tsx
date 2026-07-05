@@ -10,6 +10,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import { CornerFrame } from "@/components/ui/CornerFrame";
 import { ease, ghostNumeral, heroH1, revealItem, revealStagger } from "@/lib/design-tokens";
+import { waLink } from "@/lib/contact";
 import { ContactForm } from "./ContactForm";
 
 function pickIcon(iconName: string) {
@@ -28,6 +29,7 @@ type ContactPremiumContentProps = {
 
 export function ContactPremiumContent({ data, uri }: ContactPremiumContentProps) {
   const heroImage = `${uri}/${data.hero.imagePath}`;
+  const ctaLink = waLink("Halo GasKodeAja, saya ingin memulai konsultasi project digital saya.");
 
   return (
     <main className="bg-ink text-white">
@@ -54,7 +56,7 @@ export function ContactPremiumContent({ data, uri }: ContactPremiumContentProps)
             {data.hero.subtitle}
           </motion.p>
           <motion.div variants={revealItem} className="mt-9">
-            <Button href={data.hero.ctaLink || "/contact"} full={false}>
+            <Button href={ctaLink} full={false}>
               {data.hero.ctaText}
               <ArrowRight2 size={16} />
             </Button>
@@ -134,7 +136,7 @@ export function ContactPremiumContent({ data, uri }: ContactPremiumContentProps)
             {data.closing.description[0]}
           </p>
           <div className="mt-9 flex justify-center">
-            <Button href={data.hero.ctaLink || "/contact"} full={false}>
+            <Button href={ctaLink} full={false}>
               Mulai Sekarang
               <ArrowRight2 size={16} />
             </Button>

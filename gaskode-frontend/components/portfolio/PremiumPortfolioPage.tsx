@@ -30,6 +30,7 @@ import { CornerFrame } from "@/components/ui/CornerFrame";
 import { TiltCard } from "@/components/ui/TiltCard";
 import { OverlapCTA } from "@/components/ui/OverlapCTA";
 import { ease, ghostNumeral, heroH1, revealItem, revealStagger, sectionH2 } from "@/lib/design-tokens";
+import { waLink } from "@/lib/contact";
 
 type PremiumPortfolioPageProps = {
   data: PortfolioPageData;
@@ -58,6 +59,7 @@ function imageUrl(baseUrl: string, path: string) {
 }
 
 export function PremiumPortfolioPage({ data, imageBaseUrl }: PremiumPortfolioPageProps) {
+  const ctaLink = waLink("Halo GasKodeAja, saya tertarik mendiskusikan project setelah melihat portofolio Anda.");
   const categories = useMemo(() => {
     const unique = Array.from(new Set(data.portfolios.map(resolveCategory)));
     return ["All Projects", ...unique];
@@ -104,7 +106,7 @@ export function PremiumPortfolioPage({ data, imageBaseUrl }: PremiumPortfolioPag
               {data.hero.subtitle}
             </motion.p>
             <motion.div variants={revealItem} className="mt-9 flex flex-wrap gap-3 sm:gap-4">
-              <Button href={data.hero.ctaLink} full={false}>
+              <Button href={ctaLink} full={false}>
                 {data.hero.ctaText}
                 <ArrowRight2 size={18} />
               </Button>
@@ -196,7 +198,7 @@ export function PremiumPortfolioPage({ data, imageBaseUrl }: PremiumPortfolioPag
 
           <motion.div layout className="grid gap-7 md:grid-cols-2 xl:grid-cols-3">
             {filteredProjects.map((item, index) => (
-              <ProjectCard key={item.id} item={item} index={index} imageBaseUrl={imageBaseUrl} ctaLink={data.hero.ctaLink} />
+              <ProjectCard key={item.id} item={item} index={index} imageBaseUrl={imageBaseUrl} ctaLink={ctaLink} />
             ))}
           </motion.div>
         </div>
@@ -215,7 +217,7 @@ export function PremiumPortfolioPage({ data, imageBaseUrl }: PremiumPortfolioPag
               </h2>
               <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-white/65 sm:text-lg sm:leading-8">{data.closing.jawaban[0]}</p>
             </div>
-            <Button href={data.hero.ctaLink} full={false}>
+            <Button href={ctaLink} full={false}>
               Chat WhatsApp Sekarang
               <MessageQuestion size={22} />
             </Button>
